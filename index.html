@@ -782,38 +782,52 @@
     .hero-mockup { height: 480px; }
   }
 
-  /* ============ MOBILE NAV (burger) ============ */
+  /* ============ MOBILE NAV (burger + panneau latéral) ============ */
   .nav-burger {
     display: none;
     margin-left: auto;
-    width: 42px; height: 42px;
-    border-radius: 10px;
-    border: 1px solid var(--gray-2);
-    background: transparent;
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    border: none;
+    background: var(--burgundy);
+    color: #fff;
     align-items: center; justify-content: center;
-    padding: 0;
+    padding: 0; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(122,18,50,0.25);
+    transition: background .15s, transform .15s;
+    position: relative; z-index: 60;
   }
-  body.dark .nav-burger { border-color: #2a2826; }
+  .nav-burger:hover { background: var(--burgundy-dark); transform: translateY(-1px); }
   .nav-burger span {
-    display: block; width: 18px; height: 2px;
-    background: var(--ink); border-radius: 2px;
+    display: block; width: 20px; height: 2px;
+    background: #fff; border-radius: 2px;
     position: relative;
+    transition: background .2s;
   }
-  body.dark .nav-burger span { background: var(--cream); }
   .nav-burger span::before,
   .nav-burger span::after {
     content: ""; position: absolute; left: 0;
-    width: 18px; height: 2px; background: currentColor; border-radius: 2px;
-    transition: transform .2s ease, top .2s ease;
+    width: 20px; height: 2px; background: #fff; border-radius: 2px;
+    transition: transform .25s ease, top .25s ease;
   }
-  .nav-burger span::before { top: -6px; }
-  .nav-burger span::after  { top:  6px; }
+  .nav-burger span::before { top: -7px; }
+  .nav-burger span::after  { top:  7px; }
   body.nav-open .nav-burger span { background: transparent; }
   body.nav-open .nav-burger span::before { top: 0; transform: rotate(45deg); }
   body.nav-open .nav-burger span::after  { top: 0; transform: rotate(-45deg); }
 
-  /* ============ TABLET / MOBILE ≤ 760px ============ */
-  @media (max-width: 760px) {
+  /* Overlay sombre quand le menu est ouvert */
+  .nav-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,15,16,0.5);
+    z-index: 55;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  body.nav-open .nav-overlay { opacity: 1; pointer-events: auto; }
+
+  /* ============ MOBILE / TABLET ≤ 900px ============ */
+  @media (max-width: 900px) {
     .container { padding: 0 20px; }
     section { padding: 64px 0; }
 
@@ -822,33 +836,47 @@
     .nav-links, .nav-cta { display: none; }
     .nav-burger { display: inline-flex; }
 
-    /* Menu déroulé */
+    /* Panneau latéral qui glisse depuis la droite */
     body.nav-open .nav-links {
       display: flex; flex-direction: column;
-      position: fixed; top: 66px; left: 0; right: 0;
-      background: #fff; border-bottom: 1px solid var(--gray-2);
-      padding: 12px 20px 4px; gap: 0;
-      z-index: 49; box-shadow: var(--shadow);
+      position: fixed; top: 0; right: 0; bottom: 0;
+      width: 86%; max-width: 340px;
+      background: #fff;
+      padding: 80px 24px 24px;
+      gap: 0;
+      z-index: 56;
+      box-shadow: -12px 0 32px rgba(15,15,16,0.18);
+      overflow-y: auto;
+      animation: nav-slide .28s cubic-bezier(.2,.8,.2,1);
     }
-    body.dark.nav-open .nav-links { background: var(--ink-2); border-bottom-color: #2a2826; }
+    @keyframes nav-slide {
+      from { transform: translateX(100%); }
+      to   { transform: translateX(0); }
+    }
+    body.dark.nav-open .nav-links { background: var(--ink-2); }
     body.nav-open .nav-links a {
-      padding: 14px 4px; font-size: 16px; color: var(--ink);
+      padding: 16px 4px; font-size: 17px; font-weight: 600;
+      color: var(--ink);
       border-bottom: 1px solid var(--gray-2);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    body.nav-open .nav-links a::after {
+      content: "›"; color: var(--burgundy);
+      font-size: 22px; font-weight: 400; line-height: 1;
     }
     body.dark.nav-open .nav-links a { color: var(--cream); border-bottom-color: #2a2826; }
     body.nav-open .nav-links a:last-child { border-bottom: none; }
     body.nav-open .nav-cta {
       display: flex; position: fixed;
-      left: 0; right: 0;
-      bottom: 0;
-      padding: 16px 20px;
+      right: 0; bottom: 0;
+      width: 86%; max-width: 340px;
+      padding: 16px 24px;
       background: #fff;
       border-top: 1px solid var(--gray-2);
-      z-index: 49; margin-left: 0;
-      box-shadow: 0 -12px 24px rgba(0,0,0,0.08);
+      z-index: 57; margin-left: 0;
     }
     body.dark.nav-open .nav-cta { background: var(--ink-2); border-top-color: #2a2826; }
-    body.nav-open .nav-cta .btn { width: 100%; justify-content: center; }
+    body.nav-open .nav-cta .btn { width: 100%; justify-content: center; padding: 14px; font-size: 15px; }
     body.nav-open { overflow: hidden; }
 
     /* HERO */
@@ -1048,6 +1076,7 @@
     </div>
     <button class="nav-burger" id="nav-burger" aria-label="Menu" aria-expanded="false"><span></span></button>
   </div>
+  <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
 </nav>
 
 <!-- ============ HERO ============ -->
@@ -1708,17 +1737,20 @@ Le client scanne simplement le QR code une seule fois et sa carte de fidélité 
 <script>
   // ============ MOBILE NAV ============
   (function() {
-    const burger = document.getElementById('nav-burger');
+    const burger  = document.getElementById('nav-burger');
+    const overlay = document.getElementById('nav-overlay');
     if (!burger) return;
     const close = () => { document.body.classList.remove('nav-open'); burger.setAttribute('aria-expanded', 'false'); };
     burger.addEventListener('click', () => {
       const open = document.body.classList.toggle('nav-open');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
+    overlay && overlay.addEventListener('click', close);
     document.querySelectorAll('.nav-links a, .nav-cta a').forEach(a => {
       a.addEventListener('click', close);
     });
-    window.addEventListener('resize', () => { if (window.innerWidth > 760) close(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 900) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   })();
 
   // ============ DEMO BUILDER ============
