@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Eco Vert Guadeloupe">
+  <defs>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#66bb6a"/>
+      <stop offset="1" stop-color="#2e7d32"/>
+    </linearGradient>
+  </defs>
+  <!-- cercle ouvert -->
+  <path d="M100 18 a82 82 0 1 0 60 26" fill="none" stroke="#2e7d32" stroke-width="9" stroke-linecap="round"/>
+  <path d="M100 30 a70 70 0 1 1 -49 20" fill="none" stroke="#66bb6a" stroke-width="6" stroke-linecap="round"/>
+  <!-- feuille centrale -->
+  <path d="M100 40 C112 60 112 92 100 112 C88 92 88 60 100 40 Z" fill="url(#leaf)"/>
+  <!-- feuille gauche -->
+  <path d="M100 96 C80 78 60 78 52 86 C66 100 86 104 100 102 Z" fill="#43a047"/>
+  <!-- feuille droite -->
+  <path d="M100 96 C120 78 140 78 148 86 C134 100 114 104 100 102 Z" fill="#2e7d32"/>
+  <!-- sillons -->
+  <path d="M50 132 C75 116 125 116 150 132" fill="none" stroke="#2e7d32" stroke-width="7" stroke-linecap="round"/>
+  <path d="M58 146 C80 132 120 132 142 146" fill="none" stroke="#43a047" stroke-width="6" stroke-linecap="round"/>
+  <path d="M66 158 C84 148 116 148 134 158" fill="none" stroke="#66bb6a" stroke-width="5" stroke-linecap="round"/>
+</svg>
