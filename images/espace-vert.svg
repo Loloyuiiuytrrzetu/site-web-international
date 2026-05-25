@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label="Aménagement espace vert, paysagiste et élagage">
+  <defs>
+    <linearGradient id="s3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d7f3ff"/><stop offset="1" stop-color="#f0fff4"/></linearGradient>
+  </defs>
+  <rect width="600" height="280" fill="url(#s3)"/>
+  <rect y="270" width="600" height="130" fill="#4fae5b"/>
+  <path d="M0 300 Q150 280 300 300 T600 300 V400 H0 Z" fill="#3c9447"/>
+  <!-- big tree -->
+  <g transform="translate(170,120)">
+    <rect x="-10" y="120" width="22" height="150" fill="#7a5230"/>
+    <circle cx="0" cy="90" r="80" fill="#2e8b3d"/>
+    <circle cx="-55" cy="120" r="55" fill="#359a47"/>
+    <circle cx="55" cy="120" r="55" fill="#3aa84f"/>
+    <circle cx="0" cy="60" r="55" fill="#46b85b"/>
+  </g>
+  <!-- trimmed hedge -->
+  <g transform="translate(380,200)">
+    <rect x="0" y="0" width="180" height="70" rx="12" fill="#2e8b3d"/>
+    <rect x="0" y="0" width="180" height="18" rx="8" fill="#3fb052"/>
+  </g>
+  <!-- shears (élagage) -->
+  <g transform="translate(430,90) rotate(20)" stroke="#444" stroke-width="6" fill="none">
+    <path d="M0 0 L60 40"/><path d="M0 40 L60 0"/>
+    <circle cx="6" cy="6" r="7" fill="#888"/><circle cx="6" cy="34" r="7" fill="#888"/>
+  </g>
+  <!-- flowers -->
+  <g>
+    <circle cx="60" cy="360" r="9" fill="#ff6f91"/><circle cx="100" cy="370" r="9" fill="#ffd23b"/>
+    <circle cx="520" cy="360" r="9" fill="#ff6f91"/><circle cx="560" cy="372" r="9" fill="#ffd23b"/>
+  </g>
+</svg>

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Pelle mécanique sur un chantier de terrassement en Guadeloupe">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#bfe6ff"/>
+      <stop offset="1" stop-color="#eaf7ff"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#caa46a"/>
+      <stop offset="1" stop-color="#a07d44"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd83b"/>
+      <stop offset="1" stop-color="#f5a800"/>
+    </linearGradient>
+  </defs>
+
+  <!-- sky -->
+  <rect width="800" height="340" fill="url(#sky)"/>
+  <!-- sun -->
+  <circle cx="690" cy="80" r="46" fill="#fff3b0" opacity="0.9"/>
+  <!-- distant hills (Guadeloupe) -->
+  <path d="M0 300 Q140 210 300 290 T600 270 T800 300 V340 H0 Z" fill="#9ccf7a" opacity="0.7"/>
+  <!-- palm tree -->
+  <g transform="translate(70,150)">
+    <rect x="14" y="60" width="10" height="120" fill="#7a5230"/>
+    <path d="M19 60 Q-30 40 -50 60 Q-20 50 19 70 Z" fill="#2e8b3d"/>
+    <path d="M19 60 Q70 35 92 58 Q55 48 19 70 Z" fill="#359a47"/>
+    <path d="M19 58 Q5 10 -18 0 Q12 22 19 66 Z" fill="#3aa84f"/>
+    <path d="M19 58 Q35 8 60 2 Q28 22 19 66 Z" fill="#2e8b3d"/>
+  </g>
+
+  <!-- ground / earth pile -->
+  <rect y="320" width="800" height="180" fill="url(#ground)"/>
+  <path d="M520 320 Q600 250 700 320 Q760 300 800 320 V340 H520 Z" fill="#b98f52"/>
+  <ellipse cx="180" cy="430" rx="120" ry="22" fill="#8a6a39" opacity="0.5"/>
+
+  <!-- excavator -->
+  <g transform="translate(150,210)">
+    <!-- tracks -->
+    <rect x="-30" y="150" width="230" height="50" rx="25" fill="#2b2f36"/>
+    <circle cx="-5" cy="175" r="18" fill="#3d434c"/>
+    <circle cx="175" cy="175" r="18" fill="#3d434c"/>
+    <circle cx="60" cy="178" r="10" fill="#4a515b"/>
+    <circle cx="115" cy="178" r="10" fill="#4a515b"/>
+    <!-- body -->
+    <rect x="0" y="80" width="180" height="80" rx="12" fill="url(#body)"/>
+    <rect x="10" y="92" width="40" height="20" rx="4" fill="#1e2228"/>
+    <!-- cabin -->
+    <rect x="95" y="20" width="78" height="70" rx="10" fill="url(#body)"/>
+    <rect x="105" y="30" width="55" height="42" rx="6" fill="#bfeaff"/>
+    <rect x="105" y="30" width="55" height="42" rx="6" fill="none" stroke="#1e2228" stroke-width="3"/>
+    <!-- arm -->
+    <g stroke="#1e2228" stroke-width="3">
+      <rect x="55" y="40" width="120" height="22" rx="11" fill="url(#body)" transform="rotate(-28 55 51)"/>
+    </g>
+    <g transform="rotate(-28 55 51)">
+      <rect x="160" y="34" width="22" height="120" rx="11" fill="url(#body)" stroke="#1e2228" stroke-width="3" transform="rotate(70 171 94)"/>
+    </g>
+    <!-- bucket -->
+    <path d="M250 70 q40 5 48 45 l-18 4 q-8 -28 -36 -34 Z" fill="#cf8b1f" stroke="#1e2228" stroke-width="3"/>
+    <path d="M280 119 l24 3 l-2 12 l-26 -5 Z" fill="#a86c12"/>
+  </g>
+
+  <!-- ECO VERT logo mark -->
+  <g transform="translate(610,360)">
+    <circle r="30" fill="#1f7a3d"/>
+    <path d="M-2 14 C-22 6 -16 -16 4 -16 C22 -16 22 6 4 14 C8 2 0 -4 -2 14 Z" fill="#bff0c0"/>
+  </g>
+</svg>
