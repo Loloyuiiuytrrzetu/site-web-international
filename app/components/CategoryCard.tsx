@@ -15,7 +15,7 @@ export function CategoryCard({ category, theme, onClick }: Props) {
       type="button"
       onClick={onClick}
       className="group relative w-full overflow-hidden rounded-2xl text-left shadow-sm transition active:scale-[0.98]"
-      style={{ aspectRatio: "16 / 10" }}
+      style={{ aspectRatio: "21 / 9" }}
     >
       {category.imageUrl && (
         <Image
@@ -30,17 +30,16 @@ export function CategoryCard({ category, theme, onClick }: Props) {
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(180deg, transparent 30%, ${theme.primaryColor}cc 100%)`,
+          background: `linear-gradient(180deg, transparent 35%, ${theme.primaryColor}cc 100%)`,
         }}
       />
-      <div className="absolute inset-x-0 bottom-0 p-4 text-white">
-        <h2 className="text-xl font-semibold leading-tight">{category.name}</h2>
+      <div className="absolute inset-x-0 bottom-0 p-3.5 text-white">
+        <h2 className="text-lg font-semibold leading-tight">{category.name}</h2>
         {category.tagline && (
-          <p className="mt-0.5 text-xs opacity-90">{category.tagline}</p>
+          <p className="mt-0.5 line-clamp-1 text-[11px] opacity-90">
+            {category.tagline}
+          </p>
         )}
-        <p className="mt-2 text-[11px] uppercase tracking-wide opacity-80">
-          {category.dishes.length} plats
-        </p>
       </div>
     </button>
   );
