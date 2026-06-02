@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRestaurantStore } from "@/lib/store";
+import { useCurrentRestaurant } from "@/lib/store";
 import { MenuView } from "./MenuView";
 
 export function MenuViewLive() {
-  const restaurant = useRestaurantStore((s) => s.restaurant);
+  const restaurant = useCurrentRestaurant();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  if (!mounted || !restaurant) return null;
   return <MenuView restaurant={restaurant} />;
 }

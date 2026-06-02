@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRestaurantStore } from "@/lib/store";
+import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import { Card, Field, Input, PageHeader, Textarea } from "../_components/ui";
 import { FileUploader } from "../_components/FileUploader";
 
 export default function RestaurantPage() {
-  const restaurant = useRestaurantStore((s) => s.restaurant);
+  const restaurant = useCurrentRestaurant();
   const updateInfo = useRestaurantStore((s) => s.updateInfo);
   const updateContact = useRestaurantStore((s) => s.updateContact);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  if (!mounted || !restaurant) return null;
 
   return (
     <div className="mx-auto max-w-3xl p-5 lg:p-8">

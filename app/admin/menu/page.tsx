@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
-import { useRestaurantStore } from "@/lib/store";
+import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import type { Category, Dish } from "@/lib/types";
 import { Button, Card, PageHeader } from "../_components/ui";
 import { CategoryEditor } from "./CategoryEditor";
@@ -10,7 +10,7 @@ import { DishEditor } from "./DishEditor";
 import { formatPrice } from "@/lib/utils";
 
 export default function MenuPage() {
-  const restaurant = useRestaurantStore((s) => s.restaurant);
+  const restaurant = useCurrentRestaurant();
   const deleteCategory = useRestaurantStore((s) => s.deleteCategory);
   const deleteDish = useRestaurantStore((s) => s.deleteDish);
 
@@ -23,12 +23,12 @@ export default function MenuPage() {
 
   useEffect(() => setMounted(true), []);
   useEffect(() => {
-    if (mounted && restaurant.categories[0] && !openCatId) {
+    if (mounted && restaurant?.categories[0] && !openCatId) {
       setOpenCatId(restaurant.categories[0].id);
     }
-  }, [mounted, restaurant.categories, openCatId]);
+  }, [mounted, restaurant, openCatId]);
 
-  if (!mounted) return null;
+  if (!mounted || !restaurant) return null;
 
   return (
     <div className="mx-auto max-w-4xl p-5 lg:p-8">

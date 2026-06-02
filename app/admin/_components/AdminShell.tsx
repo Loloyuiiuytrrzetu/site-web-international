@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  ChevronsUpDown,
   Eye,
   LayoutDashboard,
   Menu as MenuIcon,
   Palette,
+  ShieldCheck,
   Store,
   UtensilsCrossed,
   X,
 } from "lucide-react";
+import { useRestaurantStore } from "@/lib/store";
 
 const nav = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -23,6 +26,13 @@ const nav = [
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const restaurants = useRestaurantStore((s) => s.restaurants);
+  const currentId = useRestaurantStore((s) => s.currentRestaurantId);
+  const setCurrent = useRestaurantStore((s) => s.setCurrentRestaurant);
+  const current = restaurants.find((r) => r.id === currentId);
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="flex flex-col gap-1 p-3">
@@ -111,10 +121,66 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="border-b px-5 py-4">
           <Brand />
         </div>
+
+        {mounted && current && restaurants.length > 1 && (
+          <div className="relative border-b p-3">
+            <button
+              type="button"
+              onClick={() => setSwitcherOpen((v) => !v)}
+              className="flex w-full items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-left hover:bg-neutral-100"
+            >
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
+                style={{ backgroundColor: current.theme.primaryColor }}
+              >
+                {current.name.charAt(0)}
+              </div>
+              <span className="flex-1 truncate text-sm font-medium">
+                {current.name}
+              </span>
+              <ChevronsUpDown size={14} className="text-neutral-400" />
+            </button>
+            {switcherOpen && (
+              <div className="absolute inset-x-3 top-full z-30 mt-1 max-h-72 overflow-y-auto rounded-lg border bg-white p-1 shadow-lg">
+                {restaurants.map((r) => (
+                  <button
+                    type="button"
+                    key={r.id}
+                    onClick={() => {
+                      setCurrent(r.id);
+                      setSwitcherOpen(false);
+                    }}
+                    className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-neutral-100 ${
+                      r.id === currentId ? "bg-violet-50 text-violet-700" : ""
+                    }`}
+                  >
+                    <div
+                      className="flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold text-white"
+                      style={{ backgroundColor: r.theme.primaryColor }}
+                    >
+                      {r.name.charAt(0)}
+                    </div>
+                    <span className="flex-1 truncate">{r.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <NavLinks />
-        <div className="mt-auto border-t p-3 text-[11px] text-neutral-500">
-          <p className="font-medium text-neutral-700">Walletiz</p>
-          <p>Solution menu QR · Admin v0.1</p>
+
+        <div className="mt-auto border-t p-3">
+          <Link
+            href="/walletiz"
+            className="flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 hover:bg-violet-100"
+          >
+            <ShieldCheck size={14} />
+            Console Walletiz
+          </Link>
+          <p className="mt-3 px-1 text-[11px] text-neutral-500">
+            Walletiz · Admin v0.1
+          </p>
         </div>
       </aside>
 

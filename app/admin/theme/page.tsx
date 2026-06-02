@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRestaurantStore } from "@/lib/store";
+import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import { Button, Card, Field, Input, PageHeader } from "../_components/ui";
 
 const PRESETS = [
@@ -13,11 +13,12 @@ const PRESETS = [
 ];
 
 export default function ThemePage() {
-  const theme = useRestaurantStore((s) => s.restaurant.theme);
+  const restaurant = useCurrentRestaurant();
   const updateTheme = useRestaurantStore((s) => s.updateTheme);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
+  if (!mounted || !restaurant) return null;
+  const theme = restaurant.theme;
 
   return (
     <div className="mx-auto max-w-3xl p-5 lg:p-8">
