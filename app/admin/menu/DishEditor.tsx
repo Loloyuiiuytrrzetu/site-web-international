@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 import { useRestaurantStore } from "@/lib/store";
-import type { Dish } from "@/lib/types";
+import type { Allergen, Dish } from "@/lib/types";
+import { ALLERGENS } from "@/lib/types";
 import { Button, Field, Input, Textarea } from "../_components/ui";
 import { FileUploader } from "../_components/FileUploader";
 
@@ -28,8 +29,14 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
   );
   const [tagsInput, setTagsInput] = useState(dish?.tags?.join(", ") ?? "");
   const [available, setAvailable] = useState(dish?.available ?? true);
+  const [allergens, setAllergens] = useState<Allergen[]>(dish?.allergens ?? []);
 
   const canSave = name.trim().length > 0 && !isNaN(Number(price));
+
+  const toggleAllergen = (id: Allergen) =>
+    setAllergens((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
 
   const save = () => {
     if (!canSave) return;
@@ -45,6 +52,7 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
         .map((t) => t.trim())
         .filter(Boolean),
       available,
+      allergens,
     };
     if (dish) updateDish(categoryId, dish.id, payload);
     else addDish(categoryId, payload);
@@ -136,6 +144,32 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="Signature, Végétarien"
             />
+          </Field>
+
+          <Field
+            label="Allergènes"
+            hint="Cochez les allergènes présents dans ce plat. Ils seront visibles par vos clients."
+          >
+            <div className="grid grid-cols-2 gap-1.5">
+              {ALLERGENS.map((a) => {
+                const active = allergens.includes(a.id);
+                return (
+                  <button
+                    type="button"
+                    key={a.id}
+                    onClick={() => toggleAllergen(a.id)}
+                    className={`flex items-center gap-2 rounded-lg border px-2.5 py-2 text-left text-xs font-medium transition active:scale-95 ${
+                      active
+                        ? "border-amber-400 bg-amber-50 text-amber-900"
+                        : "border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50"
+                    }`}
+                  >
+                    <span className="text-base leading-none">{a.emoji}</span>
+                    <span className="truncate">{a.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { ArrowLeft, Check, ChevronDown, Globe } from "lucide-react";
 import type { Category, Dish, Locale, Restaurant } from "@/lib/types";
+import { t, UI_LABELS } from "@/lib/i18n";
 import { CategoryCard } from "./CategoryCard";
 import { DishCard } from "./DishCard";
 import { DishDetailSheet } from "./DishDetailSheet";
@@ -74,15 +75,17 @@ export function MenuView({ restaurant }: Props) {
         />
       )}
 
-      <MenuFooter restaurant={restaurant} />
+      <MenuFooter restaurant={restaurant} locale={locale} />
       <OrderBar
         items={order}
         theme={restaurant.theme}
+        locale={locale}
         onClick={() => undefined}
       />
       <DishDetailSheet
         dish={activeDish}
         theme={restaurant.theme}
+        locale={locale}
         onClose={() => setActiveDish(null)}
         onAdd={addToOrder}
       />
@@ -101,15 +104,16 @@ function HomeView({
   onLocaleChange: (l: Locale) => void;
   onSelectCategory: (c: Category) => void;
 }) {
+  const tagline = t(restaurant.tagline, "tagline", restaurant.translations, locale);
   return (
     <>
       <header className="mx-auto max-w-3xl px-5 pb-10 pt-14 sm:pb-14 sm:pt-20">
-        {restaurant.tagline ? (
+        {tagline ? (
           <p
             className="text-center text-[11px] font-medium uppercase tracking-[0.3em] opacity-70"
             style={{ color: restaurant.theme.textColor }}
           >
-            {restaurant.tagline}
+            {tagline}
           </p>
         ) : (
           <div className="h-4" />
@@ -141,6 +145,7 @@ function HomeView({
               key={c.id}
               category={c}
               theme={restaurant.theme}
+              locale={locale}
               onClick={() => onSelectCategory(c)}
             />
           ))}
@@ -167,20 +172,24 @@ function CategoryView({
   onOpenDish: (d: Dish) => void;
   onAddDish: (d: Dish, qty?: number) => void;
 }) {
+  const labels = UI_LABELS[locale];
+  const name = t(category.name, "name", category.translations, locale) ?? category.name;
+  const tagline = t(category.tagline, "tagline", category.translations, locale);
+
   return (
     <main className="mx-auto max-w-3xl px-4 pb-6 pt-4">
       <div className="mb-4 flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 rounded-full border bg-white/60 px-3 py-1.5 text-xs font-medium active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-full border bg-white/70 px-3 py-1.5 text-xs font-medium active:scale-95"
           style={{
             borderColor: `${restaurant.theme.primaryColor}33`,
             color: restaurant.theme.textColor,
           }}
         >
           <ArrowLeft size={14} />
-          Retour
+          {labels.back}
         </button>
         <LocaleSwitcher
           restaurant={restaurant}
@@ -190,14 +199,9 @@ function CategoryView({
       </div>
 
       <header className="mb-4">
-        <h2 className="text-2xl font-semibold leading-tight">{category.name}</h2>
-        {category.tagline && (
-          <p className="mt-1 text-sm opacity-70">{category.tagline}</p>
-        )}
-        <p className="mt-2 text-xs opacity-60">
-          {category.dishes.length} plat
-          {category.dishes.length > 1 ? "s" : ""}
-        </p>
+        <h2 className="text-2xl font-semibold leading-tight">{name}</h2>
+        {tagline && <p className="mt-1 text-sm opacity-70">{tagline}</p>}
+        <p className="mt-2 text-xs opacity-60">{labels.dishes(category.dishes.length)}</p>
       </header>
 
       <div className="space-y-2.5">
@@ -206,14 +210,13 @@ function CategoryView({
             key={d.id}
             dish={d}
             theme={restaurant.theme}
+            locale={locale}
             onOpen={() => onOpenDish(d)}
             onAdd={() => onAddDish(d, 1)}
           />
         ))}
         {category.dishes.length === 0 && (
-          <p className="py-10 text-center text-sm opacity-60">
-            Aucun plat dans cette catégorie pour l&apos;instant.
-          </p>
+          <p className="py-10 text-center text-sm opacity-60">{labels.noDishes}</p>
         )}
       </div>
     </main>
@@ -246,11 +249,8 @@ function LocaleSwitcher({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-medium shadow-sm transition active:scale-95"
-        style={{
-          borderColor: `${restaurant.theme.primaryColor}33`,
-          color: restaurant.theme.textColor,
-        }}
+        className="flex items-center gap-1.5 rounded-full border bg-white px-3 py-1.5 text-xs font-medium text-neutral-800 shadow-sm transition active:scale-95"
+        style={{ borderColor: `${restaurant.theme.primaryColor}33` }}
         aria-label="Choisir la langue"
       >
         <Globe size={14} />
@@ -272,9 +272,8 @@ function LocaleSwitcher({
                   onLocaleChange(l);
                   setOpen(false);
                 }}
-                className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition hover:bg-neutral-50"
+                className="flex w-full items-center justify-between px-4 py-2.5 text-left text-sm text-neutral-800 transition hover:bg-neutral-50"
                 style={{
-                  color: restaurant.theme.textColor,
                   backgroundColor: active
                     ? `${restaurant.theme.primaryColor}10`
                     : undefined,

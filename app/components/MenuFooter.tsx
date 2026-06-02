@@ -1,11 +1,13 @@
 "use client";
 
 import { MapPin, MessageCircle, Phone } from "lucide-react";
-import type { Restaurant } from "@/lib/types";
+import type { Locale, Restaurant } from "@/lib/types";
+import { UI_LABELS } from "@/lib/i18n";
 
-type Props = { restaurant: Restaurant };
+type Props = { restaurant: Restaurant; locale: Locale };
 
-export function MenuFooter({ restaurant }: Props) {
+export function MenuFooter({ restaurant, locale }: Props) {
+  const labels = UI_LABELS[locale];
   const { contact, theme } = restaurant;
   const waLink = contact.whatsapp
     ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, "")}`
@@ -27,7 +29,9 @@ export function MenuFooter({ restaurant }: Props) {
               className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
             >
               <MessageCircle size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium">WhatsApp</span>
+              <span className="text-[11px] font-medium text-neutral-800">
+                {labels.whatsapp}
+              </span>
             </a>
           )}
           {telLink && (
@@ -36,7 +40,9 @@ export function MenuFooter({ restaurant }: Props) {
               className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
             >
               <Phone size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium">Appeler</span>
+              <span className="text-[11px] font-medium text-neutral-800">
+                {labels.call}
+              </span>
             </a>
           )}
           {contact.mapsUrl && (
@@ -47,7 +53,9 @@ export function MenuFooter({ restaurant }: Props) {
               className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
             >
               <MapPin size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium">Plan</span>
+              <span className="text-[11px] font-medium text-neutral-800">
+                {labels.map}
+              </span>
             </a>
           )}
         </div>

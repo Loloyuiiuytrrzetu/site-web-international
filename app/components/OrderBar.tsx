@@ -1,19 +1,22 @@
 "use client";
 
 import { ShoppingBag } from "lucide-react";
-import type { Dish, RestaurantTheme } from "@/lib/types";
+import type { Dish, Locale, RestaurantTheme } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
+import { UI_LABELS } from "@/lib/i18n";
 
 export type OrderItem = { dish: Dish; qty: number };
 
 type Props = {
   items: OrderItem[];
   theme: RestaurantTheme;
+  locale: Locale;
   onClick: () => void;
 };
 
-export function OrderBar({ items, theme, onClick }: Props) {
+export function OrderBar({ items, theme, locale, onClick }: Props) {
   if (items.length === 0) return null;
+  const labels = UI_LABELS[locale];
 
   const totalQty = items.reduce((sum, i) => sum + i.qty, 0);
   const currency = items[0].dish.price.currency;
@@ -40,7 +43,7 @@ export function OrderBar({ items, theme, onClick }: Props) {
               {totalQty}
             </span>
           </span>
-          <span className="text-sm font-semibold">Ma commande</span>
+          <span className="text-sm font-semibold">{labels.myOrder}</span>
         </span>
         <span className="text-sm font-bold">
           {formatPrice({ amount: totalAmount, currency })}

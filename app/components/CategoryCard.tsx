@@ -1,15 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import type { Category, RestaurantTheme } from "@/lib/types";
+import type { Category, Locale, RestaurantTheme } from "@/lib/types";
+import { t } from "@/lib/i18n";
 
 type Props = {
   category: Category;
   theme: RestaurantTheme;
+  locale: Locale;
   onClick: () => void;
 };
 
-export function CategoryCard({ category, theme, onClick }: Props) {
+export function CategoryCard({ category, theme, locale, onClick }: Props) {
+  const name = t(category.name, "name", category.translations, locale) ?? category.name;
+  const tagline = t(category.tagline, "tagline", category.translations, locale);
+
   return (
     <button
       type="button"
@@ -20,7 +25,7 @@ export function CategoryCard({ category, theme, onClick }: Props) {
       {category.imageUrl && (
         <Image
           src={category.imageUrl}
-          alt={category.name}
+          alt={name}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           className="object-cover transition duration-500 group-hover:scale-105"
@@ -34,11 +39,9 @@ export function CategoryCard({ category, theme, onClick }: Props) {
         }}
       />
       <div className="absolute inset-x-0 bottom-0 p-3.5 text-white">
-        <h2 className="text-lg font-semibold leading-tight">{category.name}</h2>
-        {category.tagline && (
-          <p className="mt-0.5 line-clamp-1 text-[11px] opacity-90">
-            {category.tagline}
-          </p>
+        <h2 className="text-lg font-semibold leading-tight">{name}</h2>
+        {tagline && (
+          <p className="mt-0.5 line-clamp-1 text-[11px] opacity-90">{tagline}</p>
         )}
       </div>
     </button>
