@@ -9,11 +9,14 @@ import {
   Building2,
   CreditCard,
   LayoutDashboard,
+  LogOut,
   Menu as MenuIcon,
   ShieldCheck,
   Sparkles,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 import { WALLETIZ_BRAND } from "@/lib/brand";
 
 const nav = [
@@ -33,7 +36,13 @@ const sidebarStyle: React.CSSProperties = {
 
 export function WalletizShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const logout = useAuth((s) => s.logout);
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="flex flex-col gap-1 p-3">
@@ -56,6 +65,16 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
           </Link>
         );
       })}
+      <button
+        type="button"
+        onClick={() => {
+          onClick?.();
+          handleLogout();
+        }}
+        className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-white/75 hover:bg-white/10 hover:text-white"
+      >
+        <LogOut size={18} /> Déconnexion
+      </button>
     </nav>
   );
 

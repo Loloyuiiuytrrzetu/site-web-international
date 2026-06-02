@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminShell } from "./_components/AdminShell";
+import { AuthGate } from "../components/AuthGate";
 
 export const metadata: Metadata = {
   title: "Walletiz — Dashboard restaurateur",
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <AuthGate role="restaurateur">
+      <AdminShell>{children}</AdminShell>
+    </AuthGate>
+  );
 }

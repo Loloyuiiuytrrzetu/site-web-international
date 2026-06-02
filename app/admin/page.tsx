@@ -91,9 +91,12 @@ export default function AdminDashboardPage() {
             <div className="flex h-40 w-40 items-center justify-center rounded-xl border border-dashed border-neutral-300 bg-neutral-50">
               <QrCode size={64} className="text-neutral-400" />
             </div>
-            <p className="text-center text-xs text-neutral-500">
-              Le QR code sera généré quand vous mettrez votre menu en ligne.
-            </p>
+            <Link
+              href="/admin/qr"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-neutral-800"
+            >
+              Générer mon QR <ArrowRight size={12} />
+            </Link>
           </div>
         </Card>
       </div>

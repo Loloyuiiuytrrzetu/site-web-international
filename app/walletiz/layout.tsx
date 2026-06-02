@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { WalletizShell } from "./_components/WalletizShell";
+import { AuthGate } from "../components/AuthGate";
 
 export const metadata: Metadata = {
   title: "Walletiz — Super admin",
@@ -11,5 +12,9 @@ export default function WalletizLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <WalletizShell>{children}</WalletizShell>;
+  return (
+    <AuthGate role="walletiz">
+      <WalletizShell>{children}</WalletizShell>
+    </AuthGate>
+  );
 }

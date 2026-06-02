@@ -8,13 +8,17 @@ import {
   ChevronsUpDown,
   Eye,
   LayoutDashboard,
+  LogOut,
   Menu as MenuIcon,
   Palette,
+  QrCode,
   ShieldCheck,
   Store,
   UtensilsCrossed,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 import { useRestaurantStore } from "@/lib/store";
 import { WALLETIZ_BRAND } from "@/lib/brand";
 
@@ -23,6 +27,7 @@ const nav = [
   { href: "/admin/restaurant", label: "Mon restaurant", icon: Store },
   { href: "/admin/theme", label: "Apparence", icon: Palette },
   { href: "/admin/menu", label: "Menu & plats", icon: UtensilsCrossed },
+  { href: "/admin/qr", label: "QR code", icon: QrCode },
 ];
 
 const BRAND = WALLETIZ_BRAND.colors.primary;
@@ -30,6 +35,7 @@ const BRAND_TINT = WALLETIZ_BRAND.colors.surfaceTint;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -38,6 +44,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const currentId = useRestaurantStore((s) => s.currentRestaurantId);
   const setCurrent = useRestaurantStore((s) => s.setCurrentRestaurant);
   const current = restaurants.find((r) => r.id === currentId);
+  const logout = useAuth((s) => s.logout);
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   const NavLinks = ({ onClick }: { onClick?: () => void }) => (
     <nav className="flex flex-col gap-1 p-3">
@@ -61,16 +72,28 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </Link>
         );
       })}
-      <Link
-        href="/"
-        target="_blank"
-        onClick={onClick}
-        className="mt-2 flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium"
-        style={{ borderColor: `${BRAND}33`, color: BRAND, backgroundColor: BRAND_TINT }}
+      {current && (
+        <Link
+          href={`/r/${current.slug}`}
+          target="_blank"
+          onClick={onClick}
+          className="mt-2 flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium"
+          style={{ borderColor: `${BRAND}33`, color: BRAND, backgroundColor: BRAND_TINT }}
+        >
+          <Eye size={18} />
+          Voir mon menu
+        </Link>
+      )}
+      <button
+        type="button"
+        onClick={() => {
+          onClick?.();
+          handleLogout();
+        }}
+        className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
       >
-        <Eye size={18} />
-        Voir mon menu
-      </Link>
+        <LogOut size={18} /> Déconnexion
+      </button>
     </nav>
   );
 
@@ -87,15 +110,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <MenuIcon size={20} />
         </button>
         <Brand />
-        <Link
-          href="/"
-          target="_blank"
-          aria-label="Voir mon menu"
-          className="rounded-lg p-2 active:scale-95"
-          style={{ color: BRAND }}
-        >
-          <Eye size={20} />
-        </Link>
+        {current ? (
+          <Link
+            href={`/r/${current.slug}`}
+            target="_blank"
+            aria-label="Voir mon menu"
+            className="rounded-lg p-2 active:scale-95"
+            style={{ color: BRAND }}
+          >
+            <Eye size={20} />
+          </Link>
+        ) : (
+          <div className="w-9" />
+        )}
       </header>
 
       {/* Mobile drawer */}

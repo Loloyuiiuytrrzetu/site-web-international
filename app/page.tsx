@@ -1,5 +1,5 @@
-import { MenuViewLive } from "./components/MenuViewLive";
+import { LandingPage } from "./components/LandingPage";
 
 export default function Home() {
-  return <MenuViewLive />;
+  return <LandingPage />;
 }
