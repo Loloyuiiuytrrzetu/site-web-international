@@ -110,7 +110,7 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
                   onClick={() => setPlan(p)}
                   className={`rounded-lg border px-3 py-2 text-xs font-medium capitalize transition ${
                     plan === p
-                      ? "border-violet-600 bg-violet-50 text-violet-700"
+                      ? "border-brand-700 bg-brand-50 text-brand-700"
                       : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
                   }`}
                 >

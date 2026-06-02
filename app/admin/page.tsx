@@ -67,9 +67,9 @@ export default function AdminDashboardPage() {
                 <li key={s.href}>
                   <Link
                     href={s.href}
-                    className="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 transition hover:border-violet-300 hover:bg-violet-50/40"
+                    className="flex items-center gap-3 rounded-xl border border-neutral-200 p-3 transition hover:border-brand-300 hover:bg-brand-50/40"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
                       <Icon size={18} />
                     </div>
                     <div className="flex-1">

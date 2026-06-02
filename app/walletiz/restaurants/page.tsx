@@ -108,7 +108,7 @@ export default function RestaurantsPage() {
                     <Link
                       href="/admin"
                       onClick={() => setCurrent(r.id)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2.5 py-1.5 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                      className="inline-flex items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-100"
                     >
                       <Settings size={12} /> Gérer
                     </Link>

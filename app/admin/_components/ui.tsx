@@ -73,7 +73,7 @@ export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputE
     return (
       <input
         ref={ref}
-        className={`w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 ${className}`}
+        className={`w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200 ${className}`}
         {...props}
       />
     );
@@ -87,7 +87,7 @@ export const Textarea = forwardRef<
   return (
     <textarea
       ref={ref}
-      className={`w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200 ${className}`}
+      className={`w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200 ${className}`}
       {...props}
     />
   );
@@ -101,7 +101,7 @@ export function Button({
   variant?: "primary" | "secondary" | "danger" | "ghost";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const styles = {
-    primary: "bg-violet-600 text-white hover:bg-violet-700",
+    primary: "bg-brand-700 text-white hover:bg-brand-700",
     secondary: "border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-50",
     danger: "bg-red-600 text-white hover:bg-red-700",
     ghost: "text-neutral-600 hover:bg-neutral-100",

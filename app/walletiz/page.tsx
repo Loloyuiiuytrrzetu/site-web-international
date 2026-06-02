@@ -98,7 +98,7 @@ export default function WalletizDashboardPage() {
             </ul>
             <Link
               href="/walletiz/restaurants"
-              className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-violet-700 hover:underline"
+              className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"
             >
               Tous les restaurants <ArrowRight size={12} />
             </Link>
@@ -112,7 +112,7 @@ export default function WalletizDashboardPage() {
           </div>
           <Link
             href="/walletiz/restaurants"
-            className="mt-5 block w-full rounded-lg bg-violet-600 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-violet-700"
+            className="mt-5 block w-full rounded-lg bg-brand-700 px-4 py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-700"
           >
             Gérer les comptes
           </Link>
@@ -134,7 +134,7 @@ function Kpi({
   tone: "violet" | "emerald" | "amber";
 }) {
   const tones = {
-    violet: "bg-violet-100 text-violet-700",
+    violet: "bg-brand-100 text-brand-700",
     emerald: "bg-emerald-100 text-emerald-700",
     amber: "bg-amber-100 text-amber-700",
   }[tone];

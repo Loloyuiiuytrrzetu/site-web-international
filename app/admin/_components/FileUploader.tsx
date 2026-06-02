@@ -29,7 +29,7 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
             <img src={value} alt="" className="h-full w-full object-cover" />
           )}
           {value && kind === "3d" && (
-            <div className="flex flex-col items-center gap-1 text-violet-600">
+            <div className="flex flex-col items-center gap-1 text-brand-700">
               <Box size={28} />
               <span className="text-[10px] font-semibold">3D OK</span>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -15,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useRestaurantStore } from "@/lib/store";
+import { WALLETIZ_BRAND } from "@/lib/brand";
 
 const nav = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -22,6 +24,9 @@ const nav = [
   { href: "/admin/theme", label: "Apparence", icon: Palette },
   { href: "/admin/menu", label: "Menu & plats", icon: UtensilsCrossed },
 ];
+
+const BRAND = WALLETIZ_BRAND.colors.primary;
+const BRAND_TINT = WALLETIZ_BRAND.colors.surfaceTint;
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,11 +49,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             key={n.href}
             href={n.href}
             onClick={onClick}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition"
+            style={
               active
-                ? "bg-violet-600 text-white"
-                : "text-neutral-700 hover:bg-neutral-100"
-            }`}
+                ? { backgroundColor: BRAND, color: "#fff" }
+                : { color: "#404040" }
+            }
           >
             <Icon size={18} />
             {n.label}
@@ -59,7 +65,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         href="/"
         target="_blank"
         onClick={onClick}
-        className="mt-2 flex items-center gap-3 rounded-lg border border-violet-200 px-3 py-2.5 text-sm font-medium text-violet-700 hover:bg-violet-50"
+        className="mt-2 flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm font-medium"
+        style={{ borderColor: `${BRAND}33`, color: BRAND, backgroundColor: BRAND_TINT }}
       >
         <Eye size={18} />
         Voir mon menu
@@ -84,7 +91,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           href="/"
           target="_blank"
           aria-label="Voir mon menu"
-          className="rounded-lg p-2 text-violet-700 active:scale-95"
+          className="rounded-lg p-2 active:scale-95"
+          style={{ color: BRAND }}
         >
           <Eye size={20} />
         </Link>
@@ -150,9 +158,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       setCurrent(r.id);
                       setSwitcherOpen(false);
                     }}
-                    className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-neutral-100 ${
-                      r.id === currentId ? "bg-violet-50 text-violet-700" : ""
-                    }`}
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-neutral-100"
+                    style={
+                      r.id === currentId
+                        ? { backgroundColor: BRAND_TINT, color: BRAND }
+                        : undefined
+                    }
                   >
                     <div
                       className="flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold text-white"
@@ -173,7 +184,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="mt-auto border-t p-3">
           <Link
             href="/walletiz"
-            className="flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-2 text-xs font-medium text-violet-700 hover:bg-violet-100"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium"
+            style={{ backgroundColor: BRAND_TINT, color: BRAND }}
           >
             <ShieldCheck size={14} />
             Console Walletiz
@@ -192,12 +204,17 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 function Brand() {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 text-sm font-bold text-white">
-        W
-      </div>
+      <Image
+        src={WALLETIZ_BRAND.logoUrl}
+        alt="Walletiz"
+        width={32}
+        height={32}
+        className="h-8 w-8 rounded-lg"
+        priority
+      />
       <div className="leading-tight">
         <p className="text-sm font-bold text-neutral-900">Walletiz</p>
-        <p className="text-[10px] uppercase tracking-wider text-violet-600">
+        <p className="text-[10px] uppercase tracking-wider" style={{ color: BRAND }}>
           Admin
         </p>
       </div>

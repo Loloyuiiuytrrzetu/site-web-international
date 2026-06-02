@@ -135,7 +135,7 @@ export default function MenuPage() {
                           <p className="text-xs text-neutral-500">
                             {formatPrice(d.price)}
                             {d.model3dUrl && (
-                              <span className="ml-2 rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700">
+                              <span className="ml-2 rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-semibold text-brand-700">
                                 3D
                               </span>
                             )}

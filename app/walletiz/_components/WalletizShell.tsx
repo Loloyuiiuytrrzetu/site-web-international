@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -13,6 +14,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { WALLETIZ_BRAND } from "@/lib/brand";
 
 const nav = [
   { href: "/walletiz", label: "Vue d'ensemble", icon: LayoutDashboard },
@@ -20,6 +22,14 @@ const nav = [
   { href: "/walletiz/billing", label: "Facturation", icon: CreditCard },
   { href: "/walletiz/analytics", label: "Statistiques", icon: BarChart3 },
 ];
+
+const BRAND = WALLETIZ_BRAND.colors.primary;
+const BRAND_DARK = WALLETIZ_BRAND.colors.primaryDark;
+const BRAND_LIGHT = WALLETIZ_BRAND.colors.primaryLight;
+
+const sidebarStyle: React.CSSProperties = {
+  background: `linear-gradient(180deg, ${BRAND} 0%, ${BRAND_DARK} 100%)`,
+};
 
 export function WalletizShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,7 +48,7 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
               active
                 ? "bg-white/15 text-white"
-                : "text-violet-100 hover:bg-white/10 hover:text-white"
+                : "text-white/75 hover:bg-white/10 hover:text-white"
             }`}
           >
             <Icon size={18} />
@@ -51,7 +61,10 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-1 bg-neutral-100">
-      <header className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-violet-700 bg-violet-900 px-4 text-white lg:hidden">
+      <header
+        className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-white/10 px-4 text-white lg:hidden"
+        style={{ backgroundColor: BRAND_DARK }}
+      >
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -72,8 +85,11 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-black/50"
           />
-          <aside className="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-violet-900 text-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-violet-700 px-4 py-3">
+          <aside
+            className="absolute inset-y-0 left-0 w-72 max-w-[85vw] text-white shadow-xl"
+            style={sidebarStyle}
+          >
+            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
               <Brand dark />
               <button
                 type="button"
@@ -89,17 +105,23 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <aside className="hidden w-64 shrink-0 bg-violet-900 text-white lg:flex lg:flex-col">
-        <div className="border-b border-violet-700 px-5 py-4">
+      <aside
+        className="hidden w-64 shrink-0 text-white lg:flex lg:flex-col"
+        style={sidebarStyle}
+      >
+        <div className="border-b border-white/10 px-5 py-4">
           <Brand dark />
         </div>
         <NavLinks />
-        <div className="mt-auto border-t border-violet-700 p-4">
-          <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
-            <ShieldCheck size={16} className="text-violet-200" />
+        <div className="mt-auto border-t border-white/10 p-4">
+          <div
+            className="flex items-center gap-2 rounded-lg px-3 py-2"
+            style={{ backgroundColor: BRAND_LIGHT + "55" }}
+          >
+            <ShieldCheck size={16} className="text-white" />
             <div className="leading-tight">
               <p className="text-xs font-semibold">Super admin</p>
-              <p className="text-[10px] text-violet-200">Accès complet</p>
+              <p className="text-[10px] text-white/70">Accès complet</p>
             </div>
           </div>
         </div>
@@ -113,17 +135,23 @@ export function WalletizShell({ children }: { children: React.ReactNode }) {
 function Brand({ dark }: { dark?: boolean }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-sm font-bold text-violet-700">
-        W
-      </div>
+      <Image
+        src={WALLETIZ_BRAND.logoUrl}
+        alt="Walletiz"
+        width={32}
+        height={32}
+        className="h-8 w-8 rounded-lg"
+        priority
+      />
       <div className="leading-tight">
         <p className={`text-sm font-bold ${dark ? "text-white" : "text-neutral-900"}`}>
           Walletiz
         </p>
         <p
           className={`flex items-center gap-1 text-[10px] uppercase tracking-wider ${
-            dark ? "text-violet-200" : "text-violet-600"
+            dark ? "text-white/70" : ""
           }`}
+          style={dark ? undefined : { color: BRAND }}
         >
           <Sparkles size={9} /> Console
         </p>

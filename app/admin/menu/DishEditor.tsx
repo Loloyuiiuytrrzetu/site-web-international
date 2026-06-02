@@ -115,7 +115,7 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
             </div>
             <Field label="Devise">
               <select
-                className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
+                className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200"
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
               >
@@ -160,7 +160,7 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
               type="checkbox"
               checked={available}
               onChange={(e) => setAvailable(e.target.checked)}
-              className="h-4 w-4 rounded border-neutral-300 text-violet-600 focus:ring-violet-500"
+              className="h-4 w-4 rounded border-neutral-300 text-brand-700 focus:ring-brand-600"
             />
             <span className="font-medium">Plat disponible</span>
             <span className="ml-auto text-xs text-neutral-500">

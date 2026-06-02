@@ -40,7 +40,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-100">
                   <div
-                    className="h-full rounded-full bg-violet-500"
+                    className="h-full rounded-full bg-brand-600"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
