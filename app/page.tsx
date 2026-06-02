@@ -1,6 +1,5 @@
-import { MenuView } from "./components/MenuView";
-import { demoRestaurant } from "@/lib/demo-restaurant";
+import { MenuViewLive } from "./components/MenuViewLive";
 
 export default function Home() {
-  return <MenuView restaurant={demoRestaurant} />;
+  return <MenuViewLive />;
 }
