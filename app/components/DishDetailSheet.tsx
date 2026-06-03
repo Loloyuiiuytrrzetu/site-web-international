@@ -140,7 +140,7 @@ export function DishDetailSheet({ dish, theme, locale, onClose, onAdd }: Props) 
           {dishAllergens.length > 0 && (
             <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-800">
-                ⚠️ {labels.allergens}
+                {labels.allergens}
               </p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {dishAllergens.map((a) => (
