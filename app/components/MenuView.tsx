@@ -10,6 +10,7 @@ import { DishCard } from "./DishCard";
 import { DishDetailSheet } from "./DishDetailSheet";
 import { MenuFooter } from "./MenuFooter";
 import { OrderBar, type OrderItem } from "./OrderBar";
+import { OrderSheet } from "./OrderSheet";
 
 const LOCALE_LABELS: Record<Locale, string> = {
   fr: "Français",
@@ -29,6 +30,15 @@ export function MenuView({ restaurant }: Props) {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeDish, setActiveDish] = useState<Dish | null>(null);
   const [order, setOrder] = useState<OrderItem[]>([]);
+  const [orderOpen, setOrderOpen] = useState(false);
+
+  const updateQty = (dishId: string, qty: number) => {
+    setOrder((prev) =>
+      qty <= 0
+        ? prev.filter((i) => i.dish.id !== dishId)
+        : prev.map((i) => (i.dish.id === dishId ? { ...i, qty } : i))
+    );
+  };
 
   const addToOrder = (dish: Dish, qty = 1) => {
     setOrder((prev) => {
@@ -80,7 +90,15 @@ export function MenuView({ restaurant }: Props) {
         items={order}
         theme={restaurant.theme}
         locale={locale}
-        onClick={() => undefined}
+        onClick={() => setOrderOpen(true)}
+      />
+      <OrderSheet
+        open={orderOpen && order.length > 0}
+        items={order}
+        theme={restaurant.theme}
+        locale={locale}
+        onClose={() => setOrderOpen(false)}
+        onUpdateQty={updateQty}
       />
       <DishDetailSheet
         dish={activeDish}

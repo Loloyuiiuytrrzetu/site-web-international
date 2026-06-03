@@ -24,6 +24,7 @@ export const UI_LABELS: Record<Locale, {
   map: string;
   noDishes: string;
   allergens: string;
+  total: string;
 }> = {
   fr: {
     back: "Retour",
@@ -39,6 +40,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Plan",
     noDishes: "Aucun plat dans cette catégorie.",
     allergens: "Allergènes",
+    total: "Total",
   },
   en: {
     back: "Back",
@@ -54,6 +56,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Map",
     noDishes: "No dishes in this category.",
     allergens: "Allergens",
+    total: "Total",
   },
   ar: {
     back: "رجوع",
@@ -69,6 +72,7 @@ export const UI_LABELS: Record<Locale, {
     map: "الخريطة",
     noDishes: "لا توجد أطباق في هذه الفئة.",
     allergens: "مسببات الحساسية",
+    total: "المجموع",
   },
   es: {
     back: "Volver",
@@ -84,6 +88,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Mapa",
     noDishes: "No hay platos en esta categoría.",
     allergens: "Alérgenos",
+    total: "Total",
   },
   it: {
     back: "Indietro",
@@ -99,6 +104,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Mappa",
     noDishes: "Nessun piatto in questa categoria.",
     allergens: "Allergeni",
+    total: "Totale",
   },
   de: {
     back: "Zurück",
@@ -114,6 +120,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Karte",
     noDishes: "Keine Gerichte in dieser Kategorie.",
     allergens: "Allergene",
+    total: "Gesamt",
   },
   pt: {
     back: "Voltar",
@@ -129,6 +136,7 @@ export const UI_LABELS: Record<Locale, {
     map: "Mapa",
     noDishes: "Nenhum prato nesta categoria.",
     allergens: "Alérgenos",
+    total: "Total",
   },
   zh: {
     back: "返回",
@@ -144,5 +152,6 @@ export const UI_LABELS: Record<Locale, {
     map: "地图",
     noDishes: "此分类中没有菜品。",
     allergens: "过敏原",
+    total: "总计",
   },
 };
