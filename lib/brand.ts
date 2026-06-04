@@ -1,6 +1,6 @@
 export const WALLETIZ_BRAND = {
   name: "Walletiz",
-  logoUrl: "/walletiz-logo.svg",
+  logoUrl: "/walletiz-logo.webp",
   colors: {
     primary: "#7a1226",
     primaryDark: "#5c0d1c",
