@@ -6,8 +6,11 @@ export function t<K extends string>(
   translations: Translatable<K> | undefined,
   locale: Locale
 ): string | undefined {
-  const translated = translations?.[locale]?.[key];
-  return translated || fallback;
+  return (
+    translations?.[locale]?.[key] ||
+    translations?.en?.[key] ||
+    fallback
+  );
 }
 
 export const UI_LABELS: Record<Locale, {

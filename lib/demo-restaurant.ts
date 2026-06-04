@@ -72,6 +72,26 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Panna fresca, parmigiano stagionato 24 mesi",
               description: "Pasta fresca fatta in casa, crema di tartufo nero e scaglie di parmigiano.",
             },
+                      de: {
+              name: "Tagliatelle mit Trüffel",
+              subtitle: "Crème fraîche, 24 Monate gereifter Parmesan",
+              description: "Hausgemachte frische Pasta, schwarze Trüffelcreme und Parmesanspäne.",
+            },
+            ar: {
+              name: "تالياتيلي بالكمأة",
+              subtitle: "كريم فريش، بارميزان معتق 24 شهرًا",
+              description: "معكرونة طازجة منزلية، كريمة الكمأة السوداء ورقائق البارميزان.",
+            },
+            pt: {
+              name: "Tagliatelle com trufa",
+              subtitle: "Crème fraîche, parmesão curado 24 meses",
+              description: "Massa fresca caseira, creme de trufa negra e lascas de parmesão.",
+            },
+            zh: {
+              name: "松露宽面",
+              subtitle: "法式酸奶油，陈年24个月帕玛森奶酪",
+              description: "自制新鲜意面，黑松露奶油配帕玛森奶酪刨花。",
+            },
           },
           price: { amount: 18.5, currency: "EUR" },
           imageUrl:
@@ -102,6 +122,26 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Risotto allo zafferano, gremolata",
               description: "Stinco di vitello brasato 6 ore, servito con risotto cremoso allo zafferano.",
             },
+                      de: {
+              name: "Ossobuco nach Mailänder Art",
+              subtitle: "Safran-Risotto, Gremolata",
+              description: "6 Stunden geschmorte Kalbshaxe, serviert mit cremigem Safran-Risotto.",
+            },
+            ar: {
+              name: "أوسو بوكو على الطريقة الميلانية",
+              subtitle: "ريزوتو بالزعفران، غريمولاتا",
+              description: "ساق عجل مطهية 6 ساعات، مع ريزوتو كريمي بالزعفران.",
+            },
+            pt: {
+              name: "Ossobuco à milanesa",
+              subtitle: "Risoto de açafrão, gremolata",
+              description: "Jarrete de vitela braseado 6 horas, servido com risoto cremoso de açafrão.",
+            },
+            zh: {
+              name: "米兰式炖小牛膝",
+              subtitle: "藏红花烩饭，柠檬碎香料",
+              description: "小牛膝慢炖6小时，配奶油藏红花烩饭。",
+            },
           },
           price: { amount: 26, currency: "EUR" },
           imageUrl:
@@ -129,6 +169,26 @@ export const demoRestaurant: Restaurant = {
               name: "Risotto ai funghi porcini",
               subtitle: "Porcini freschi, burro nocciola",
               description: "Riso arborio cremoso, porcini saltati e scaglie di parmigiano.",
+            },
+                      de: {
+              name: "Steinpilz-Risotto",
+              subtitle: "Frische Steinpilze, braune Butter",
+              description: "Cremiger Arborio-Reis, gebratene Steinpilze und Parmesanspäne.",
+            },
+            ar: {
+              name: "ريزوتو بالفطر البورسيني",
+              subtitle: "بورسيني طازج، زبدة بنية",
+              description: "أرز أربوريو كريمي، فطر بورسيني مقلي ورقائق بارميزان.",
+            },
+            pt: {
+              name: "Risoto de funghi porcini",
+              subtitle: "Porcini fresco, manteiga noisette",
+              description: "Arroz arbóreo cremoso, cogumelos porcini salteados e lascas de parmesão.",
+            },
+            zh: {
+              name: "牛肝菌烩饭",
+              subtitle: "新鲜牛肝菌，焦化黄油",
+              description: "奶油阿勃瑞欧米，炒牛肝菌配帕玛森奶酪刨花。",
             },
           },
           price: { amount: 19, currency: "EUR" },
@@ -177,6 +237,26 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Classica pasticceria italiana",
               description: "Cornetto sfogliato italiano farcito con crema pasticcera fatta in casa.",
             },
+                      de: {
+              name: "Cornetto mit Sahne",
+              subtitle: "Klassisches italienisches Gebäck",
+              description: "Blättriges italienisches Croissant mit hausgemachter Konditorcreme.",
+            },
+            ar: {
+              name: "كورنيتو بالكريمة",
+              subtitle: "معجنات إيطالية كلاسيكية",
+              description: "كرواسون إيطالي مورق محشو بكريمة الحلواني المنزلية.",
+            },
+            pt: {
+              name: "Cornetto com creme",
+              subtitle: "Pastelaria italiana clássica",
+              description: "Croissant italiano folhado recheado com creme pasteleiro caseiro.",
+            },
+            zh: {
+              name: "奶油羊角包",
+              subtitle: "经典意式糕点",
+              description: "酥脆意式羊角包，填充自制糕点奶油。",
+            },
           },
           price: { amount: 3.5, currency: "EUR" },
           imageUrl:
@@ -204,6 +284,26 @@ export const demoRestaurant: Restaurant = {
               name: "Uova alla Benedict",
               subtitle: "Pane brioche, salsa olandese",
               description: "Uova in camicia, bacon, salsa olandese fatta in casa su brioche tostata.",
+            },
+                      de: {
+              name: "Eier Benedict",
+              subtitle: "Brioche-Brot, Sauce Hollandaise",
+              description: "Pochierte Eier, Speck, hausgemachte Sauce Hollandaise auf getoasteter Brioche.",
+            },
+            ar: {
+              name: "بيض بنديكت",
+              subtitle: "خبز بريوش، صلصة هولنديز",
+              description: "بيض مسلوق، لحم مقدد، صلصة هولنديز منزلية على بريوش محمص.",
+            },
+            pt: {
+              name: "Ovos Benedict",
+              subtitle: "Pão brioche, molho holandês",
+              description: "Ovos pochê, bacon, molho holandês caseiro sobre brioche tostado.",
+            },
+            zh: {
+              name: "本尼迪克蛋",
+              subtitle: "布里欧吐司，荷兰酱",
+              description: "水波蛋、培根、自制荷兰酱配烤布里欧吐司。",
             },
           },
           price: { amount: 12, currency: "EUR" },
@@ -248,6 +348,22 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Mozzarella di bufala, basilico fresco",
               description: "Salsa di pomodoro San Marzano, mozzarella di bufala e basilico fresco.",
             },
+                      de: {
+              subtitle: "Büffelmozzarella, frisches Basilikum",
+              description: "San-Marzano-Tomatensauce, Büffelmozzarella und frisches Basilikum.",
+            },
+            ar: {
+              subtitle: "موزاريلا الجاموس، ريحان طازج",
+              description: "صلصة طماطم سان مارزانو، موزاريلا الجاموس وريحان طازج.",
+            },
+            pt: {
+              subtitle: "Mozzarella de búfala, manjericão fresco",
+              description: "Molho de tomate San Marzano, mozzarella de búfala e manjericão fresco.",
+            },
+            zh: {
+              subtitle: "水牛奶酪，新鲜罗勒",
+              description: "圣马尔扎诺番茄酱、水牛奶酪和新鲜罗勒。",
+            },
           },
           price: { amount: 13, currency: "EUR" },
           imageUrl:
@@ -276,6 +392,25 @@ export const demoRestaurant: Restaurant = {
               name: "Pizza al tartufo",
               subtitle: "Crema al tartufo, funghi, parmigiano",
               description: "Base con crema di tartufo, mozzarella, funghi e parmigiano.",
+            },
+                      de: {
+              name: "Trüffelpizza",
+              subtitle: "Trüffelcreme, Pilze, Parmesan",
+              description: "Trüffelcreme-Basis, Mozzarella, Pilze und Parmesan.",
+            },
+            ar: {
+              name: "بيتزا الكمأة",
+              subtitle: "كريمة الكمأة، فطر، بارميزان",
+              description: "قاعدة كريمة الكمأة، موزاريلا، فطر وبارميزان.",
+            },
+            pt: {
+              subtitle: "Creme de trufa, cogumelos, parmesão",
+              description: "Base de creme de trufa, mozzarella, cogumelos e parmesão.",
+            },
+            zh: {
+              name: "松露披萨",
+              subtitle: "松露酱，蘑菇，帕玛森奶酪",
+              description: "松露奶油底，马苏里拉奶酪、蘑菇和帕玛森奶酪。",
             },
           },
           price: { amount: 17, currency: "EUR" },
@@ -324,6 +459,26 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Mascarpone, caffè espresso, cacao",
               description: "Il grande classico italiano: savoiardi inzuppati nell'espresso, crema al mascarpone e cacao.",
             },
+                      de: {
+              name: "Hausgemachtes Tiramisu",
+              subtitle: "Mascarpone, Espresso, Kakao",
+              description: "Der italienische Klassiker: in Espresso getränkte Löffelbiskuits, Mascarponecreme und Kakao.",
+            },
+            ar: {
+              name: "تيراميسو منزلي",
+              subtitle: "ماسكاربوني، إسبريسو، كاكاو",
+              description: "الكلاسيكية الإيطالية: أصابع البسكويت المنقوعة بالإسبريسو، كريمة الماسكاربوني والكاكاو.",
+            },
+            pt: {
+              name: "Tiramisu caseiro",
+              subtitle: "Mascarpone, espresso, cacau",
+              description: "O clássico italiano: biscoitos embebidos em espresso, creme de mascarpone e cacau.",
+            },
+            zh: {
+              name: "自制提拉米苏",
+              subtitle: "马斯卡彭，浓缩咖啡，可可",
+              description: "意式经典：浓缩咖啡浸泡的手指饼干、马斯卡彭奶油和可可粉。",
+            },
           },
           price: { amount: 8, currency: "EUR" },
           imageUrl:
@@ -349,6 +504,22 @@ export const demoRestaurant: Restaurant = {
             it: {
               subtitle: "Coulis di frutti rossi",
               description: "Crema vellutata alla vaniglia del Madagascar con coulis di frutti rossi.",
+            },
+                      de: {
+              subtitle: "Rote-Beeren-Coulis",
+              description: "Samtige Madagaskar-Vanillecreme mit Rote-Beeren-Coulis.",
+            },
+            ar: {
+              subtitle: "كولي التوت الأحمر",
+              description: "كريمة الفانيليا المدغشقرية الناعمة مع كولي التوت الأحمر.",
+            },
+            pt: {
+              subtitle: "Coulis de frutas vermelhas",
+              description: "Creme aveludado de baunilha de Madagascar com coulis de frutas vermelhas.",
+            },
+            zh: {
+              subtitle: "红色浆果酱",
+              description: "丝滑马达加斯加香草奶油配红色浆果酱。",
             },
           },
           price: { amount: 7, currency: "EUR" },
@@ -393,6 +564,22 @@ export const demoRestaurant: Restaurant = {
               subtitle: "Aperol, prosecco, acqua frizzante",
               description: "L'aperitivo italiano per eccellenza, servito con ghiaccio e fetta d'arancia.",
             },
+                      de: {
+              subtitle: "Aperol, Prosecco, Sodawasser",
+              description: "Der italienische Aperitif schlechthin, auf Eis mit Orangenscheibe serviert.",
+            },
+            ar: {
+              subtitle: "أبيرول، بروسيكو، ماء غازي",
+              description: "المشروب الإيطالي الفاتح للشهية بامتياز، مع الثلج وشريحة برتقال.",
+            },
+            pt: {
+              subtitle: "Aperol, prosecco, água com gás",
+              description: "O aperitivo italiano por excelência, servido com gelo e fatia de laranja.",
+            },
+            zh: {
+              subtitle: "Aperol、普罗赛克、苏打水",
+              description: "意式开胃酒经典，加冰配橙片享用。",
+            },
           },
           price: { amount: 9, currency: "EUR" },
           imageUrl:
@@ -420,6 +607,26 @@ export const demoRestaurant: Restaurant = {
               name: "Limonata della casa",
               subtitle: "Limoni di Sicilia spremuti",
               description: "Limonata artigianale con limoni gialli di Sicilia, leggermente frizzante.",
+            },
+                      de: {
+              name: "Hausgemachte Limonata",
+              subtitle: "Frisch gepresste sizilianische Zitronen",
+              description: "Handwerkliche Limonade mit gelben sizilianischen Zitronen, leicht prickelnd.",
+            },
+            ar: {
+              name: "ليموناتة منزلية",
+              subtitle: "ليمون صقلي معصور طازج",
+              description: "ليموناتة حرفية بليمون صقلي أصفر، خفيفة الغازية.",
+            },
+            pt: {
+              name: "Limonata caseira",
+              subtitle: "Limões sicilianos espremidos",
+              description: "Limonada artesanal com limões amarelos sicilianos, levemente gaseificada.",
+            },
+            zh: {
+              name: "自制柠檬水",
+              subtitle: "现榨西西里柠檬",
+              description: "手工柠檬水，西西里黄柠檬，微气泡。",
             },
           },
           price: { amount: 5, currency: "EUR" },

@@ -30,11 +30,15 @@ export function DishDetailSheet({ dish, theme, locale, onClose, onAdd }: Props) 
   useEffect(() => {
     if (!dish) return;
     const original = document.body.style.overflow;
+    const onPop = () => onClose();
     document.body.style.overflow = "hidden";
+    window.addEventListener("popstate", onPop);
+    window.history.pushState({ sheet: "dish" }, "");
     return () => {
       document.body.style.overflow = original;
+      window.removeEventListener("popstate", onPop);
     };
-  }, [dish]);
+  }, [dish, onClose]);
 
   if (!dish) return null;
 

@@ -73,7 +73,7 @@ export function DishCard({ dish, theme, locale, onOpen, onAdd }: Props) {
         <div className="mt-auto flex w-full items-center justify-between pt-2">
           <span
             className="text-sm font-bold"
-            style={{ color: theme.accentColor }}
+            style={{ color: theme.primaryColor }}
           >
             {formatPrice(dish.price)}
           </span>

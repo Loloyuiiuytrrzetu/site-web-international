@@ -22,10 +22,14 @@ export function OrderSheet({ open, items, theme, locale, onClose, onUpdateQty }:
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onPop = () => onClose();
     document.addEventListener("keydown", onKey);
+    window.addEventListener("popstate", onPop);
+    window.history.pushState({ sheet: "order" }, "");
     document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("popstate", onPop);
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
@@ -65,6 +69,13 @@ export function OrderSheet({ open, items, theme, locale, onClose, onUpdateQty }:
               const name = t(dish.name, "name", dish.translations, locale) ?? dish.name;
               return (
                 <li key={dish.id} className="flex items-center gap-3 py-3">
+                  {dish.imageUrl && (
+                    <img
+                      src={dish.imageUrl}
+                      alt={name}
+                      className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                    />
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-neutral-900">{name}</p>
                     <p className="text-xs text-neutral-500">

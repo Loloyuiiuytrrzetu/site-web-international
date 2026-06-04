@@ -106,7 +106,7 @@ export default function RestaurantsPage() {
                       <ExternalLink size={12} /> Menu
                     </Link>
                     <Link
-                      href="/admin"
+                      href="/admin/menu"
                       onClick={() => setCurrent(r.id)}
                       className="inline-flex items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-100"
                     >
