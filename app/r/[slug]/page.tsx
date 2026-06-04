@@ -1,22 +1,15 @@
-"use client";
-
-import { useEffect, useState, use } from "react";
-import { useRestaurantStore } from "@/lib/store";
+import { fetchRestaurantBySlug } from "@/lib/supabase-fetch";
 import { MenuView } from "@/app/components/MenuView";
 
-export default function RestaurantMenuPage({
+export const dynamic = "force-dynamic";
+
+export default async function RestaurantMenuPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = use(params);
-  const restaurants = useRestaurantStore((s) => s.restaurants);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
-
-  const restaurant = restaurants.find((r) => r.slug === slug);
+  const { slug } = await params;
+  const restaurant = await fetchRestaurantBySlug(slug);
 
   if (!restaurant) {
     return (
