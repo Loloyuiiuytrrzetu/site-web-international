@@ -13,19 +13,26 @@ export function AuthGate({
 }) {
   const router = useRouter();
   const session = useAuth((s) => s.session);
+  const loading = useAuth((s) => s.loading);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || loading) return;
     if (!session) {
       router.replace("/login");
     } else if (session.role !== role && session.role !== "walletiz") {
       router.replace("/admin");
     }
-  }, [mounted, session, role, router]);
+  }, [mounted, loading, session, role, router]);
 
-  if (!mounted) return null;
+  if (!mounted || loading) {
+    return (
+      <div className="flex min-h-screen flex-1 items-center justify-center">
+        <p className="text-sm text-neutral-500">Chargement...</p>
+      </div>
+    );
+  }
   if (!session || (session.role !== role && session.role !== "walletiz")) {
     return (
       <div className="flex min-h-screen flex-1 items-center justify-center">

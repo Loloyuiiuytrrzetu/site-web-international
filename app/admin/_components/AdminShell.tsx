@@ -45,8 +45,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const setCurrent = useRestaurantStore((s) => s.setCurrentRestaurant);
   const current = restaurants.find((r) => r.id === currentId);
   const logout = useAuth((s) => s.logout);
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push("/");
   };
 

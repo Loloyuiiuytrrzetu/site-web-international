@@ -20,13 +20,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const result = login(email, password);
+    setSubmitting(true);
+    const result = await login(email, password);
+    setSubmitting(false);
     if (!result.ok) {
-      setError("Email ou mot de passe incorrect.");
+      setError(result.error || "Email ou mot de passe incorrect.");
       return;
     }
     if (result.role === "walletiz") {
@@ -118,11 +121,12 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-95"
+                disabled={submitting}
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-95 disabled:opacity-60"
                 style={{ backgroundColor: BRAND }}
               >
-                Se connecter
-                <ArrowRight size={14} />
+                {submitting ? "Connexion..." : "Se connecter"}
+                {!submitting && <ArrowRight size={14} />}
               </button>
             </form>
 
