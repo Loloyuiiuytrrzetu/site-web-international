@@ -164,12 +164,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               onClick={() => setSwitcherOpen((v) => !v)}
               className="flex w-full items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-left hover:bg-neutral-100"
             >
-              <div
-                className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
-                style={{ backgroundColor: current.theme.primaryColor }}
-              >
-                {current.name.charAt(0)}
-              </div>
+              {current.logoUrl ? (
+                <img
+                  src={current.logoUrl}
+                  alt={current.name}
+                  className="h-7 w-7 shrink-0 rounded-md object-cover"
+                />
+              ) : (
+                <div
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold text-white"
+                  style={{ backgroundColor: current.theme.primaryColor }}
+                >
+                  {current.name.charAt(0)}
+                </div>
+              )}
               <span className="flex-1 truncate text-sm font-medium">
                 {current.name}
               </span>
@@ -192,12 +200,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                         : undefined
                     }
                   >
-                    <div
-                      className="flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold text-white"
-                      style={{ backgroundColor: r.theme.primaryColor }}
-                    >
-                      {r.name.charAt(0)}
-                    </div>
+                    {r.logoUrl ? (
+                      <img
+                        src={r.logoUrl}
+                        alt={r.name}
+                        className="h-6 w-6 shrink-0 rounded object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="flex h-6 w-6 items-center justify-center rounded text-[10px] font-bold text-white"
+                        style={{ backgroundColor: r.theme.primaryColor }}
+                      >
+                        {r.name.charAt(0)}
+                      </div>
+                    )}
                     <span className="flex-1 truncate">{r.name}</span>
                   </button>
                 ))}

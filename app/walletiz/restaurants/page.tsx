@@ -76,12 +76,20 @@ export default function RestaurantsPage() {
                   className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
                 >
                   <div className="flex flex-1 items-center gap-3 min-w-0">
-                    <div
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl font-bold text-white"
-                      style={{ backgroundColor: r.theme.primaryColor }}
-                    >
-                      {r.name.charAt(0)}
-                    </div>
+                    {r.logoUrl ? (
+                      <img
+                        src={r.logoUrl}
+                        alt={r.name}
+                        className="h-12 w-12 shrink-0 rounded-xl object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl font-bold text-white"
+                        style={{ backgroundColor: r.theme.primaryColor }}
+                      >
+                        {r.name.charAt(0)}
+                      </div>
+                    )}
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <p className="truncate text-sm font-semibold text-neutral-900">

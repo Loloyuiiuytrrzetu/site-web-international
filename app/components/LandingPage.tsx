@@ -132,50 +132,16 @@ function Hero() {
 
 function PhoneMockup() {
   return (
-    <div className="relative mx-auto w-full max-w-xs lg:max-w-sm">
-      <div className="relative rounded-[2.5rem] bg-neutral-950 p-3 shadow-2xl">
-        <div className="overflow-hidden rounded-[2rem] bg-neutral-50">
-          <div
-            className="h-32 w-full bg-cover bg-center"
-            style={{
-              backgroundImage:
-                "url(https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=600&q=80)",
-            }}
+    <div className="relative mx-auto w-full max-w-[320px] lg:max-w-[380px]">
+      <div className="relative rounded-[3rem] bg-neutral-950 p-3 shadow-2xl">
+        <div className="absolute left-1/2 top-3 z-10 h-6 w-32 -translate-x-1/2 rounded-b-2xl bg-neutral-950" />
+        <div className="overflow-hidden rounded-[2.5rem] bg-neutral-50" style={{ aspectRatio: "9/19" }}>
+          <iframe
+            src="/r/il-piatto"
+            title="Aperçu menu Walletiz"
+            className="h-full w-full border-0"
+            loading="lazy"
           />
-          <div className="space-y-2 p-3">
-            <div className="flex items-center gap-2">
-              <div
-                className="h-8 w-8 rounded-full"
-                style={{ backgroundColor: BRAND_DARK }}
-              />
-              <div>
-                <div className="h-2.5 w-20 rounded bg-neutral-300" />
-                <div className="mt-1 h-1.5 w-12 rounded bg-neutral-200" />
-              </div>
-            </div>
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 rounded-xl bg-white p-2 shadow-sm"
-              >
-                <div className="h-12 w-12 shrink-0 rounded-lg bg-neutral-200" />
-                <div className="flex-1 space-y-1">
-                  <div className="h-2 w-3/4 rounded bg-neutral-300" />
-                  <div className="h-1.5 w-1/2 rounded bg-neutral-200" />
-                  <div
-                    className="h-2 w-12 rounded"
-                    style={{ backgroundColor: BRAND }}
-                  />
-                </div>
-                <div
-                  className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white"
-                  style={{ backgroundColor: BRAND }}
-                >
-                  +
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 

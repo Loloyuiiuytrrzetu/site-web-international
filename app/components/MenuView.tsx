@@ -125,7 +125,13 @@ function HomeView({
   const tagline = t(restaurant.tagline, "tagline", restaurant.translations, locale);
   return (
     <>
-      <header className="mx-auto max-w-3xl px-5 pb-10 pt-14 sm:pb-14 sm:pt-20">
+      {restaurant.coverUrl && (
+        <div
+          className="h-40 w-full bg-cover bg-center sm:h-56"
+          style={{ backgroundImage: `url(${restaurant.coverUrl})` }}
+        />
+      )}
+      <header className="mx-auto max-w-3xl px-5 pb-10 pt-8 sm:pb-14 sm:pt-12">
         {tagline ? (
           <p
             className="text-center text-[11px] font-medium uppercase tracking-[0.3em] opacity-70"
@@ -137,17 +143,26 @@ function HomeView({
           <div className="h-4" />
         )}
 
-        <div className="mt-14 flex items-end justify-between gap-3 sm:mt-20">
-          <h1
-            className="flex-1 text-5xl italic leading-none tracking-tight sm:text-6xl"
-            style={{
-              color: restaurant.theme.textColor,
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              fontWeight: 400,
-            }}
-          >
-            {restaurant.name}
-          </h1>
+        <div className="mt-10 flex items-end justify-between gap-3 sm:mt-14">
+          <div className="flex flex-1 items-center gap-3">
+            {restaurant.logoUrl && (
+              <img
+                src={restaurant.logoUrl}
+                alt={restaurant.name}
+                className="h-14 w-14 shrink-0 rounded-xl object-cover sm:h-16 sm:w-16"
+              />
+            )}
+            <h1
+              className="flex-1 text-4xl italic leading-none tracking-tight sm:text-5xl"
+              style={{
+                color: restaurant.theme.textColor,
+                fontFamily: "Georgia, 'Times New Roman', serif",
+                fontWeight: 400,
+              }}
+            >
+              {restaurant.name}
+            </h1>
+          </div>
           <LocaleSwitcher
             restaurant={restaurant}
             locale={locale}
