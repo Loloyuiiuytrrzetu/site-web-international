@@ -225,7 +225,7 @@ export const useRestaurantStore = create<State & Actions>()(
     }),
     {
       name: "walletiz-store",
-      version: 2,
+      version: 3,
       migrate: () => initialState,
     }
   )
