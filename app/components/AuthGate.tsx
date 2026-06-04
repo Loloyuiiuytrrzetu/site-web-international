@@ -20,13 +20,13 @@ export function AuthGate({
     if (!mounted) return;
     if (!session) {
       router.replace("/login");
-    } else if (session.role !== role) {
-      router.replace(session.role === "walletiz" ? "/walletiz" : "/admin");
+    } else if (session.role !== role && session.role !== "walletiz") {
+      router.replace("/admin");
     }
   }, [mounted, session, role, router]);
 
   if (!mounted) return null;
-  if (!session || session.role !== role) {
+  if (!session || (session.role !== role && session.role !== "walletiz")) {
     return (
       <div className="flex min-h-screen flex-1 items-center justify-center">
         <p className="text-sm text-neutral-500">Redirection...</p>
