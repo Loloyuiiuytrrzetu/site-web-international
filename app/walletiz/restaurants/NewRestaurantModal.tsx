@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, X } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useRestaurantStore, type ManagedRestaurant } from "@/lib/store";
@@ -20,7 +20,7 @@ type Success = {
   restaurantId: string;
   slug: string;
   ownerEmail: string;
-  tempPassword: string;
+  emailSent: boolean;
 };
 
 export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
@@ -37,7 +37,6 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<Success | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const onName = (v: string) => {
     setName(v);
@@ -84,17 +83,6 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const copyPassword = async () => {
-    if (!success) return;
-    try {
-      await navigator.clipboard.writeText(success.tempPassword);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // noop
-    }
-  };
-
   const finish = () => {
     if (success) {
       setCurrent(success.restaurantId);
@@ -130,38 +118,28 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
 
         {success ? (
           <div className="flex flex-col gap-4">
-            <p className="text-sm text-neutral-700">
-              Le compte de <span className="font-semibold">{success.ownerEmail}</span>{" "}
-              a été créé. Communiquez-lui le mot de passe ci-dessous pour qu&apos;il
-              puisse se connecter.
-            </p>
-
-            <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
-              ⚠️ Ce mot de passe ne sera affiché qu&apos;une seule fois. Notez-le ou
-              transmettez-le au restaurateur dès maintenant.
+            <div className="flex flex-col items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                <Mail size={22} />
+              </div>
+              <div>
+                <p className="text-base font-semibold text-emerald-900">
+                  Email d&apos;activation envoyé
+                </p>
+                <p className="mt-1 text-sm text-emerald-800">
+                  Un lien vient d&apos;être envoyé à{" "}
+                  <span className="font-semibold">{success.ownerEmail}</span>.
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-3">
-              <p className="mb-1 text-[10px] font-medium uppercase tracking-wider text-neutral-500">
-                Email
-              </p>
-              <p className="font-mono text-sm">{success.ownerEmail}</p>
-              <p className="mt-3 mb-1 text-[10px] font-medium uppercase tracking-wider text-neutral-500">
-                Mot de passe temporaire
-              </p>
-              <div className="flex items-center gap-2">
-                <code className="flex-1 rounded bg-white px-2 py-1.5 font-mono text-sm">
-                  {success.tempPassword}
-                </code>
-                <button
-                  type="button"
-                  onClick={copyPassword}
-                  className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 bg-white px-2.5 py-1.5 text-xs font-medium hover:bg-neutral-50"
-                >
-                  {copied ? <Check size={12} /> : <Copy size={12} />}
-                  {copied ? "Copié" : "Copier"}
-                </button>
-              </div>
+            <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-xs text-neutral-700">
+              <p className="font-semibold text-neutral-900">Prochaines étapes</p>
+              <ul className="mt-1.5 list-decimal pl-4 space-y-1">
+                <li>Le restaurateur reçoit l&apos;email.</li>
+                <li>Il clique sur le lien pour activer son compte.</li>
+                <li>Il définit son propre mot de passe et accède à son admin.</li>
+              </ul>
             </div>
 
             <Button onClick={finish} className="w-full">

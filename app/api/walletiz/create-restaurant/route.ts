@@ -14,22 +14,22 @@ const slugify = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-function generatePassword(): string {
-  const chars =
-    "abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789";
-  const arr = new Uint8Array(10);
-  crypto.getRandomValues(arr);
-  let out = "";
-  for (let i = 0; i < 10; i++) out += chars[arr[i] % chars.length];
-  return out + "!" + (Math.floor(Math.random() * 90) + 10);
-}
-
 const DEFAULT_THEME = {
   primaryColor: "#1f2937",
   backgroundColor: "#faf7f2",
   textColor: "#1f2937",
   accentColor: "#c2410c",
 };
+
+function getSiteOrigin(req: NextRequest): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+  const origin = req.headers.get("origin");
+  if (origin) return origin;
+  const host = req.headers.get("host");
+  if (host) return `https://${host}`;
+  return "https://walletiz.vercel.app";
+}
 
 export async function POST(req: NextRequest) {
   if (!URL || !ANON || !SERVICE) {
@@ -149,23 +149,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const tempPassword = generatePassword();
+  const siteOrigin = getSiteOrigin(req);
+  const redirectTo = `${siteOrigin}/auth/setup`;
 
-  const { error: createUserErr } = await admin.auth.admin.createUser({
-    email: ownerEmail,
-    password: tempPassword,
-    email_confirm: true,
-    user_metadata: {
-      role: "restaurateur",
-      restaurant_id: resto.id,
-    },
-  });
+  const { error: inviteErr } = await admin.auth.admin.inviteUserByEmail(
+    ownerEmail,
+    {
+      data: {
+        role: "restaurateur",
+        restaurant_id: resto.id,
+      },
+      redirectTo,
+    }
+  );
 
-  if (createUserErr) {
+  if (inviteErr) {
     await admin.from("restaurants").delete().eq("id", resto.id);
-    const msg = createUserErr.message.includes("already")
+    const msg = inviteErr.message.includes("already")
       ? "Un utilisateur avec cet email existe déjà."
-      : createUserErr.message;
+      : inviteErr.message;
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
@@ -192,6 +194,6 @@ export async function POST(req: NextRequest) {
     restaurantId: resto.id,
     slug,
     ownerEmail,
-    tempPassword,
+    emailSent: true,
   });
 }
