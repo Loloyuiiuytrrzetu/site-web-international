@@ -1,7 +1,9 @@
 "use client";
 
-import { Box, Image as ImageIcon, Trash2, Upload } from "lucide-react";
-import { useRef } from "react";
+import { Box, Image as ImageIcon, Loader2, Trash2, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { useRestaurantStore } from "@/lib/store";
+import { uploadFile } from "@/lib/supabase-storage";
 
 type Props = {
   label: string;
@@ -13,10 +15,20 @@ type Props = {
 
 export function FileUploader({ label, accept, value, onChange, kind }: Props) {
   const ref = useRef<HTMLInputElement>(null);
+  const restaurantId = useRestaurantStore((s) => s.currentRestaurantId);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFile = (file: File) => {
-    const url = URL.createObjectURL(file);
-    onChange(url);
+  const handleFile = async (file: File) => {
+    setError(null);
+    setUploading(true);
+    const result = await uploadFile(file, restaurantId, kind);
+    setUploading(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    onChange(result.url);
   };
 
   return (
@@ -24,6 +36,11 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
       <p className="mb-1.5 text-xs font-medium text-neutral-700">{label}</p>
       <div className="flex items-start gap-3">
         <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50">
+          {uploading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70">
+              <Loader2 size={20} className="animate-spin text-neutral-700" />
+            </div>
+          )}
           {value && kind === "image" && (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={value} alt="" className="h-full w-full object-cover" />
@@ -34,7 +51,7 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
               <span className="text-[10px] font-semibold">3D OK</span>
             </div>
           )}
-          {!value && (
+          {!value && !uploading && (
             <div className="flex flex-col items-center gap-1 text-neutral-400">
               {kind === "image" ? <ImageIcon size={20} /> : <Box size={20} />}
               <span className="text-[10px]">Vide</span>
@@ -45,13 +62,14 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
         <div className="flex flex-1 flex-col gap-2">
           <button
             type="button"
+            disabled={uploading}
             onClick={() => ref.current?.click()}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-800 hover:bg-neutral-50 active:scale-95"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-800 hover:bg-neutral-50 active:scale-95 disabled:opacity-60"
           >
             <Upload size={14} />
-            {value ? "Remplacer" : "Téléverser"}
+            {uploading ? "Téléversement..." : value ? "Remplacer" : "Téléverser"}
           </button>
-          {value && (
+          {value && !uploading && (
             <button
               type="button"
               onClick={() => onChange(undefined)}
@@ -66,6 +84,9 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
               ? "JPG, PNG ou WebP. Max 5 Mo."
               : "GLB ou GLTF. Max 20 Mo."}
           </p>
+          {error && (
+            <p className="text-[11px] font-medium text-red-600">{error}</p>
+          )}
         </div>
       </div>
       <input
@@ -75,7 +96,7 @@ export function FileUploader({ label, accept, value, onChange, kind }: Props) {
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (f) handleFile(f);
+          if (f) void handleFile(f);
           e.target.value = "";
         }}
       />
