@@ -23,7 +23,9 @@ export type Allergen =
   | "celery"
   | "sulfites"
   | "sesame"
-  | "lupin";
+  | "lupin"
+  | "mushroom"
+  | "onion";
 
 export const ALLERGENS: { id: Allergen; emoji: string; label: string }[] = [
   { id: "gluten", emoji: "🌾", label: "Gluten" },
@@ -40,6 +42,8 @@ export const ALLERGENS: { id: Allergen; emoji: string; label: string }[] = [
   { id: "sulfites", emoji: "🍷", label: "Sulfites" },
   { id: "sesame", emoji: "🫘", label: "Sésame" },
   { id: "lupin", emoji: "🌼", label: "Lupin" },
+  { id: "mushroom", emoji: "🍄", label: "Champignon" },
+  { id: "onion", emoji: "🧅", label: "Oignon" },
 ];
 
 export type Dish = {
