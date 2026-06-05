@@ -10,6 +10,17 @@ import type {
   RestaurantTheme,
 } from "./types";
 import { demoRestaurant } from "./demo-restaurant";
+import {
+  deleteCategoryRow,
+  deleteDishRow,
+  insertCategory,
+  insertDish,
+  updateCategoryRow,
+  updateDishRow,
+  updateRestaurantContact,
+  updateRestaurantInfo,
+  updateRestaurantTheme,
+} from "./supabase-mutations";
 
 export type RestaurantStatus = "active" | "suspended" | "draft";
 
@@ -59,6 +70,11 @@ type Actions = {
 };
 
 const uid = () => Math.random().toString(36).slice(2, 10);
+
+const newId = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : uid();
 
 const slugify = (s: string) =>
   s
@@ -121,7 +137,7 @@ export const useRestaurantStore = create<State & Actions>()(
         }),
 
       createRestaurant: (init) => {
-        const id = uid();
+        const id = newId();
         const baseSlug = init.slug || slugify(init.name);
         const newR: ManagedRestaurant = {
           id,
@@ -165,27 +181,54 @@ export const useRestaurantStore = create<State & Actions>()(
           ),
         })),
 
-      updateInfo: (patch) => set((s) => mapCurrent(s, (r) => ({ ...r, ...patch }))),
+      updateInfo: (patch) => {
+        const id = get().currentRestaurantId;
+        set((s) => mapCurrent(s, (r) => ({ ...r, ...patch })));
+        void updateRestaurantInfo(id, patch);
+      },
 
-      updateTheme: (patch) =>
+      updateTheme: (patch) => {
         set((s) =>
           mapCurrent(s, (r) => ({ ...r, theme: { ...r.theme, ...patch } }))
-        ),
+        );
+        const state = get();
+        const current = state.restaurants.find(
+          (r) => r.id === state.currentRestaurantId
+        );
+        if (current) void updateRestaurantTheme(current.id, current.theme);
+      },
 
-      updateContact: (patch) =>
+      updateContact: (patch) => {
         set((s) =>
           mapCurrent(s, (r) => ({ ...r, contact: { ...r.contact, ...patch } }))
-        ),
+        );
+        const state = get();
+        const current = state.restaurants.find(
+          (r) => r.id === state.currentRestaurantId
+        );
+        if (current) void updateRestaurantContact(current.id, current.contact);
+      },
 
-      addCategory: (cat) =>
+      addCategory: (cat) => {
+        const id = newId();
+        const restaurantId = get().currentRestaurantId;
+        const current = get().restaurants.find((r) => r.id === restaurantId);
+        const sortOrder = current?.categories.length ?? 0;
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
-            categories: [...r.categories, { ...cat, id: uid(), dishes: [] }],
+            categories: [...r.categories, { ...cat, id, dishes: [] }],
           }))
-        ),
+        );
+        void insertCategory(restaurantId, {
+          ...cat,
+          id,
+          dishes: [],
+          sort_order: sortOrder,
+        });
+      },
 
-      updateCategory: (id, patch) =>
+      updateCategory: (id, patch) => {
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
@@ -193,29 +236,40 @@ export const useRestaurantStore = create<State & Actions>()(
               c.id === id ? { ...c, ...patch } : c
             ),
           }))
-        ),
+        );
+        void updateCategoryRow(id, patch);
+      },
 
-      deleteCategory: (id) =>
+      deleteCategory: (id) => {
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
             categories: r.categories.filter((c) => c.id !== id),
           }))
-        ),
+        );
+        void deleteCategoryRow(id);
+      },
 
-      addDish: (categoryId, dish) =>
+      addDish: (categoryId, dish) => {
+        const id = newId();
+        const restaurantId = get().currentRestaurantId;
+        const current = get().restaurants.find((r) => r.id === restaurantId);
+        const cat = current?.categories.find((c) => c.id === categoryId);
+        const sortOrder = cat?.dishes.length ?? 0;
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
             categories: r.categories.map((c) =>
               c.id === categoryId
-                ? { ...c, dishes: [...c.dishes, { ...dish, id: uid() }] }
+                ? { ...c, dishes: [...c.dishes, { ...dish, id }] }
                 : c
             ),
           }))
-        ),
+        );
+        void insertDish(categoryId, { ...dish, id, sort_order: sortOrder });
+      },
 
-      updateDish: (categoryId, dishId, patch) =>
+      updateDish: (categoryId, dishId, patch) => {
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
@@ -230,9 +284,11 @@ export const useRestaurantStore = create<State & Actions>()(
                 : c
             ),
           }))
-        ),
+        );
+        void updateDishRow(dishId, patch);
+      },
 
-      deleteDish: (categoryId, dishId) =>
+      deleteDish: (categoryId, dishId) => {
         set((s) =>
           mapCurrent(s, (r) => ({
             ...r,
@@ -242,7 +298,9 @@ export const useRestaurantStore = create<State & Actions>()(
                 : c
             ),
           }))
-        ),
+        );
+        void deleteDishRow(dishId);
+      },
     }),
     {
       name: "walletiz-store",
