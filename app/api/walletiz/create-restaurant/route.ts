@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { translateText } from "@/lib/translate-server";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -133,7 +134,7 @@ export async function POST(req: NextRequest) {
       tagline,
       plan,
       status: "active",
-      locales: ["fr", "en"],
+      locales: ["fr", "en", "ar", "es", "it", "de", "pt", "zh"],
       default_locale: "fr",
       theme: DEFAULT_THEME,
       contact: {},
@@ -172,6 +173,20 @@ export async function POST(req: NextRequest) {
     .from("profiles")
     .update({ role: "restaurateur", restaurant_id: resto.id })
     .eq("email", ownerEmail);
+
+  if (tagline) {
+    const trans = await translateText(tagline, "tagline");
+    if (trans && Object.keys(trans).length > 0) {
+      const translations: Record<string, { tagline: string }> = {};
+      for (const [locale, translated] of Object.entries(trans)) {
+        if (translated) translations[locale] = { tagline: translated };
+      }
+      await admin
+        .from("restaurants")
+        .update({ translations })
+        .eq("id", resto.id);
+    }
+  }
 
   return NextResponse.json({
     restaurantId: resto.id,

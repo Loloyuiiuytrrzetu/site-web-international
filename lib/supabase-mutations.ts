@@ -19,6 +19,17 @@ export async function updateRestaurantInfo(
   if (error) logError("updateRestaurantInfo", error);
 }
 
+export async function updateRestaurantTranslations(
+  id: string,
+  translations: Restaurant["translations"]
+) {
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ translations: translations ?? null })
+    .eq("id", id);
+  if (error) logError("updateRestaurantTranslations", error);
+}
+
 export async function updateRestaurantTheme(id: string, theme: RestaurantTheme) {
   const { error } = await supabase
     .from("restaurants")

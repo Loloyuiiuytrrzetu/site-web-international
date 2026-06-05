@@ -8,6 +8,7 @@ import type {
   Restaurant,
   RestaurantContact,
   RestaurantTheme,
+  Translatable,
 } from "./types";
 import { demoRestaurant } from "./demo-restaurant";
 import {
@@ -20,7 +21,13 @@ import {
   updateRestaurantContact,
   updateRestaurantInfo,
   updateRestaurantTheme,
+  updateRestaurantTranslations,
 } from "./supabase-mutations";
+import {
+  callTranslate,
+  debouncedTranslate,
+  mergeFieldTranslation,
+} from "./translate-client";
 
 export type RestaurantStatus = "active" | "suspended" | "draft";
 
@@ -144,7 +151,7 @@ export const useRestaurantStore = create<State & Actions>()(
           slug: baseSlug || id,
           name: init.name,
           tagline: init.tagline,
-          locales: ["fr", "en"],
+          locales: ["fr", "en", "ar", "es", "it", "de", "pt", "zh"],
           defaultLocale: init.defaultLocale ?? "fr",
           theme: {
             primaryColor: "#1f2937",
@@ -185,6 +192,14 @@ export const useRestaurantStore = create<State & Actions>()(
         const id = get().currentRestaurantId;
         set((s) => mapCurrent(s, (r) => ({ ...r, ...patch })));
         void updateRestaurantInfo(id, patch);
+        if ("tagline" in patch && patch.tagline) {
+          debouncedTranslate(
+            `resto-tagline-${id}`,
+            patch.tagline,
+            "tagline",
+            (trans) => void applyRestaurantFieldTrans(id, "tagline", trans)
+          );
+        }
       },
 
       updateTheme: (patch) => {
@@ -220,12 +235,15 @@ export const useRestaurantStore = create<State & Actions>()(
             categories: [...r.categories, { ...cat, id, dishes: [] }],
           }))
         );
-        void insertCategory(restaurantId, {
-          ...cat,
-          id,
-          dishes: [],
-          sort_order: sortOrder,
-        });
+        void (async () => {
+          await insertCategory(restaurantId, {
+            ...cat,
+            id,
+            dishes: [],
+            sort_order: sortOrder,
+          });
+          await translateCategoryFields(id, cat.name, cat.tagline);
+        })();
       },
 
       updateCategory: (id, patch) => {
@@ -238,6 +256,22 @@ export const useRestaurantStore = create<State & Actions>()(
           }))
         );
         void updateCategoryRow(id, patch);
+        if ("name" in patch && patch.name) {
+          debouncedTranslate(
+            `cat-name-${id}`,
+            patch.name,
+            "category_name",
+            (trans) => void applyCategoryFieldTrans(id, "name", trans)
+          );
+        }
+        if ("tagline" in patch && patch.tagline) {
+          debouncedTranslate(
+            `cat-tagline-${id}`,
+            patch.tagline,
+            "category_tagline",
+            (trans) => void applyCategoryFieldTrans(id, "tagline", trans)
+          );
+        }
       },
 
       deleteCategory: (id) => {
@@ -266,7 +300,15 @@ export const useRestaurantStore = create<State & Actions>()(
             ),
           }))
         );
-        void insertDish(categoryId, { ...dish, id, sort_order: sortOrder });
+        void (async () => {
+          await insertDish(categoryId, { ...dish, id, sort_order: sortOrder });
+          await translateDishFields(
+            id,
+            dish.name,
+            dish.subtitle,
+            dish.description
+          );
+        })();
       },
 
       updateDish: (categoryId, dishId, patch) => {
@@ -286,6 +328,30 @@ export const useRestaurantStore = create<State & Actions>()(
           }))
         );
         void updateDishRow(dishId, patch);
+        if ("name" in patch && patch.name) {
+          debouncedTranslate(
+            `dish-name-${dishId}`,
+            patch.name,
+            "dish_name",
+            (trans) => void applyDishFieldTrans(dishId, "name", trans)
+          );
+        }
+        if ("subtitle" in patch && patch.subtitle) {
+          debouncedTranslate(
+            `dish-subtitle-${dishId}`,
+            patch.subtitle,
+            "dish_subtitle",
+            (trans) => void applyDishFieldTrans(dishId, "subtitle", trans)
+          );
+        }
+        if ("description" in patch && patch.description) {
+          debouncedTranslate(
+            `dish-desc-${dishId}`,
+            patch.description,
+            "dish_description",
+            (trans) => void applyDishFieldTrans(dishId, "description", trans)
+          );
+        }
       },
 
       deleteDish: (categoryId, dishId) => {
@@ -314,4 +380,144 @@ export function useCurrentRestaurant(): ManagedRestaurant | undefined {
   return useRestaurantStore((s) =>
     s.restaurants.find((r) => r.id === s.currentRestaurantId)
   );
+}
+
+// --- Helpers de traduction (appelés depuis les actions) ---
+
+async function applyRestaurantFieldTrans(
+  restaurantId: string,
+  field: "name" | "tagline",
+  trans: Partial<Record<string, string>>
+) {
+  const state = useRestaurantStore.getState();
+  const resto = state.restaurants.find((r) => r.id === restaurantId);
+  if (!resto) return;
+  const merged = mergeFieldTranslation(
+    resto.translations as Translatable<"name" | "tagline"> | undefined,
+    field,
+    trans as never
+  );
+  useRestaurantStore.setState((s) => ({
+    restaurants: s.restaurants.map((r) =>
+      r.id === restaurantId ? { ...r, translations: merged } : r
+    ),
+  }));
+  await updateRestaurantTranslations(restaurantId, merged);
+}
+
+async function applyCategoryFieldTrans(
+  categoryId: string,
+  field: "name" | "tagline",
+  trans: Partial<Record<string, string>>
+) {
+  const state = useRestaurantStore.getState();
+  const resto = state.restaurants.find((r) =>
+    r.categories.some((c) => c.id === categoryId)
+  );
+  if (!resto) return;
+  const cat = resto.categories.find((c) => c.id === categoryId);
+  if (!cat) return;
+  const merged = mergeFieldTranslation(
+    cat.translations as Translatable<"name" | "tagline"> | undefined,
+    field,
+    trans as never
+  );
+  useRestaurantStore.setState((s) => ({
+    restaurants: s.restaurants.map((r) =>
+      r.id === resto.id
+        ? {
+            ...r,
+            categories: r.categories.map((c) =>
+              c.id === categoryId ? { ...c, translations: merged } : c
+            ),
+          }
+        : r
+    ),
+  }));
+  await updateCategoryRow(categoryId, { translations: merged });
+}
+
+async function applyDishFieldTrans(
+  dishId: string,
+  field: "name" | "subtitle" | "description",
+  trans: Partial<Record<string, string>>
+) {
+  const state = useRestaurantStore.getState();
+  let restoId = "";
+  let catId = "";
+  let dish: Dish | undefined;
+  for (const r of state.restaurants) {
+    for (const c of r.categories) {
+      const d = c.dishes.find((d) => d.id === dishId);
+      if (d) {
+        restoId = r.id;
+        catId = c.id;
+        dish = d;
+        break;
+      }
+    }
+    if (dish) break;
+  }
+  if (!dish || !restoId || !catId) return;
+  const merged = mergeFieldTranslation(
+    dish.translations as
+      | Translatable<"name" | "subtitle" | "description">
+      | undefined,
+    field,
+    trans as never
+  );
+  useRestaurantStore.setState((s) => ({
+    restaurants: s.restaurants.map((r) =>
+      r.id === restoId
+        ? {
+            ...r,
+            categories: r.categories.map((c) =>
+              c.id === catId
+                ? {
+                    ...c,
+                    dishes: c.dishes.map((d) =>
+                      d.id === dishId ? { ...d, translations: merged } : d
+                    ),
+                  }
+                : c
+            ),
+          }
+        : r
+    ),
+  }));
+  await updateDishRow(dishId, { translations: merged });
+}
+
+async function translateCategoryFields(
+  catId: string,
+  name?: string,
+  tagline?: string
+) {
+  const [nameTrans, taglineTrans] = await Promise.all([
+    name ? callTranslate(name, "category_name") : Promise.resolve(null),
+    tagline
+      ? callTranslate(tagline, "category_tagline")
+      : Promise.resolve(null),
+  ]);
+  if (nameTrans) await applyCategoryFieldTrans(catId, "name", nameTrans);
+  if (taglineTrans)
+    await applyCategoryFieldTrans(catId, "tagline", taglineTrans);
+}
+
+async function translateDishFields(
+  dishId: string,
+  name?: string,
+  subtitle?: string,
+  description?: string
+) {
+  const [nameTrans, subTrans, descTrans] = await Promise.all([
+    name ? callTranslate(name, "dish_name") : Promise.resolve(null),
+    subtitle ? callTranslate(subtitle, "dish_subtitle") : Promise.resolve(null),
+    description
+      ? callTranslate(description, "dish_description")
+      : Promise.resolve(null),
+  ]);
+  if (nameTrans) await applyDishFieldTrans(dishId, "name", nameTrans);
+  if (subTrans) await applyDishFieldTrans(dishId, "subtitle", subTrans);
+  if (descTrans) await applyDishFieldTrans(dishId, "description", descTrans);
 }
