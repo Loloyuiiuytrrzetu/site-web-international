@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useRestaurantStore } from "@/lib/store";
 import { WALLETIZ_BRAND } from "@/lib/brand";
+import { TranslationsBanner } from "./TranslationsBanner";
 
 const nav = [
   { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard },
@@ -239,7 +240,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="flex-1 pt-14 lg:pt-0">{children}</main>
+      <main className="flex-1 pt-14 lg:pt-0">
+        <TranslationsBanner />
+        {children}
+      </main>
     </div>
   );
 }

@@ -153,7 +153,7 @@ export function DishDetailSheet({ dish, theme, locale, onClose, onAdd }: Props) 
                     className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-xs font-medium text-amber-900 shadow-sm"
                   >
                     <span className="text-sm leading-none">{a.emoji}</span>
-                    {a.label}
+                    {a.labels[locale] ?? a.label}
                   </span>
                 ))}
               </div>
