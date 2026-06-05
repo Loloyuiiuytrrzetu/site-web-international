@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useCurrentRestaurant } from "@/lib/store";
 import { Card, PageHeader } from "./_components/ui";
+import { TranslationsBanner } from "./_components/TranslationsBanner";
 
 export default function AdminDashboardPage() {
   const restaurant = useCurrentRestaurant();
@@ -50,6 +51,8 @@ export default function AdminDashboardPage() {
         title={`Bonjour ${restaurant.name}`}
         description="Voici un aperçu de votre menu digital."
       />
+
+      <TranslationsBanner />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Catégories" value={restaurant.categories.length} />

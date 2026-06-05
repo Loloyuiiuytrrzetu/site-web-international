@@ -521,3 +521,151 @@ async function translateDishFields(
   if (subTrans) await applyDishFieldTrans(dishId, "subtitle", subTrans);
   if (descTrans) await applyDishFieldTrans(dishId, "description", descTrans);
 }
+
+const TARGET_LOCALES = ["en", "ar", "es", "it", "de", "pt", "zh"] as const;
+
+function fieldNeedsTranslation(
+  translations: Translatable<string> | undefined,
+  field: string
+): boolean {
+  if (!translations) return true;
+  for (const l of TARGET_LOCALES) {
+    const v = translations[l]?.[field];
+    if (!v) return true;
+  }
+  return false;
+}
+
+export type TranslationTask = {
+  text: string;
+  run: () => Promise<void>;
+};
+
+export function buildMissingTranslationTasks(): TranslationTask[] {
+  const state = useRestaurantStore.getState();
+  const resto = state.restaurants.find(
+    (r) => r.id === state.currentRestaurantId
+  );
+  if (!resto) return [];
+  const tasks: TranslationTask[] = [];
+
+  if (
+    resto.tagline &&
+    fieldNeedsTranslation(
+      resto.translations as Translatable<string> | undefined,
+      "tagline"
+    )
+  ) {
+    const text = resto.tagline;
+    tasks.push({
+      text,
+      run: async () => {
+        const r = await callTranslate(text, "tagline");
+        if (r) await applyRestaurantFieldTrans(resto.id, "tagline", r);
+      },
+    });
+  }
+
+  for (const cat of resto.categories) {
+    if (
+      cat.name &&
+      fieldNeedsTranslation(
+        cat.translations as Translatable<string> | undefined,
+        "name"
+      )
+    ) {
+      const text = cat.name;
+      const id = cat.id;
+      tasks.push({
+        text,
+        run: async () => {
+          const r = await callTranslate(text, "category_name");
+          if (r) await applyCategoryFieldTrans(id, "name", r);
+        },
+      });
+    }
+    if (
+      cat.tagline &&
+      fieldNeedsTranslation(
+        cat.translations as Translatable<string> | undefined,
+        "tagline"
+      )
+    ) {
+      const text = cat.tagline;
+      const id = cat.id;
+      tasks.push({
+        text,
+        run: async () => {
+          const r = await callTranslate(text, "category_tagline");
+          if (r) await applyCategoryFieldTrans(id, "tagline", r);
+        },
+      });
+    }
+    for (const dish of cat.dishes) {
+      if (
+        dish.name &&
+        fieldNeedsTranslation(
+          dish.translations as Translatable<string> | undefined,
+          "name"
+        )
+      ) {
+        const text = dish.name;
+        const id = dish.id;
+        tasks.push({
+          text,
+          run: async () => {
+            const r = await callTranslate(text, "dish_name");
+            if (r) await applyDishFieldTrans(id, "name", r);
+          },
+        });
+      }
+      if (
+        dish.subtitle &&
+        fieldNeedsTranslation(
+          dish.translations as Translatable<string> | undefined,
+          "subtitle"
+        )
+      ) {
+        const text = dish.subtitle;
+        const id = dish.id;
+        tasks.push({
+          text,
+          run: async () => {
+            const r = await callTranslate(text, "dish_subtitle");
+            if (r) await applyDishFieldTrans(id, "subtitle", r);
+          },
+        });
+      }
+      if (
+        dish.description &&
+        fieldNeedsTranslation(
+          dish.translations as Translatable<string> | undefined,
+          "description"
+        )
+      ) {
+        const text = dish.description;
+        const id = dish.id;
+        tasks.push({
+          text,
+          run: async () => {
+            const r = await callTranslate(text, "dish_description");
+            if (r) await applyDishFieldTrans(id, "description", r);
+          },
+        });
+      }
+    }
+  }
+
+  return tasks;
+}
+
+export async function runTranslationTasks(
+  tasks: TranslationTask[],
+  onProgress?: (done: number, total: number) => void
+): Promise<void> {
+  onProgress?.(0, tasks.length);
+  for (let i = 0; i < tasks.length; i++) {
+    await tasks[i].run();
+    onProgress?.(i + 1, tasks.length);
+  }
+}
