@@ -10,10 +10,11 @@ export async function updateRestaurantInfo(
   patch: Partial<Pick<Restaurant, "name" | "tagline" | "logoUrl" | "coverUrl">>
 ) {
   const row: Record<string, unknown> = {};
-  if (patch.name !== undefined) row.name = patch.name;
-  if (patch.tagline !== undefined) row.tagline = patch.tagline || null;
-  if (patch.logoUrl !== undefined) row.logo_url = patch.logoUrl || null;
-  if (patch.coverUrl !== undefined) row.cover_url = patch.coverUrl || null;
+  if ("name" in patch && patch.name) row.name = patch.name;
+  if ("tagline" in patch) row.tagline = patch.tagline || null;
+  if ("logoUrl" in patch) row.logo_url = patch.logoUrl || null;
+  if ("coverUrl" in patch) row.cover_url = patch.coverUrl || null;
+  if (Object.keys(row).length === 0) return;
   const { error } = await supabase.from("restaurants").update(row).eq("id", id);
   if (error) logError("updateRestaurantInfo", error);
 }
@@ -58,10 +59,11 @@ export async function updateCategoryRow(
   patch: Partial<Omit<Category, "id" | "dishes">>
 ) {
   const row: Record<string, unknown> = {};
-  if (patch.name !== undefined) row.name = patch.name;
-  if (patch.tagline !== undefined) row.tagline = patch.tagline || null;
-  if (patch.imageUrl !== undefined) row.image_url = patch.imageUrl || null;
-  if (patch.translations !== undefined) row.translations = patch.translations ?? null;
+  if ("name" in patch && patch.name) row.name = patch.name;
+  if ("tagline" in patch) row.tagline = patch.tagline || null;
+  if ("imageUrl" in patch) row.image_url = patch.imageUrl || null;
+  if ("translations" in patch) row.translations = patch.translations ?? null;
+  if (Object.keys(row).length === 0) return;
   const { error } = await supabase.from("categories").update(row).eq("id", id);
   if (error) logError("updateCategoryRow", error);
 }
@@ -99,19 +101,20 @@ export async function updateDishRow(
   patch: Partial<Omit<Dish, "id">>
 ) {
   const row: Record<string, unknown> = {};
-  if (patch.name !== undefined) row.name = patch.name;
-  if (patch.subtitle !== undefined) row.subtitle = patch.subtitle || null;
-  if (patch.description !== undefined) row.description = patch.description || null;
-  if (patch.price !== undefined) {
+  if ("name" in patch && patch.name) row.name = patch.name;
+  if ("subtitle" in patch) row.subtitle = patch.subtitle || null;
+  if ("description" in patch) row.description = patch.description || null;
+  if ("price" in patch && patch.price) {
     row.price_amount = patch.price.amount;
     row.price_currency = patch.price.currency;
   }
-  if (patch.imageUrl !== undefined) row.image_url = patch.imageUrl || null;
-  if (patch.model3dUrl !== undefined) row.model3d_url = patch.model3dUrl || null;
-  if (patch.tags !== undefined) row.tags = patch.tags ?? null;
-  if (patch.available !== undefined) row.available = patch.available;
-  if (patch.allergens !== undefined) row.allergens = patch.allergens ?? null;
-  if (patch.translations !== undefined) row.translations = patch.translations ?? null;
+  if ("imageUrl" in patch) row.image_url = patch.imageUrl || null;
+  if ("model3dUrl" in patch) row.model3d_url = patch.model3dUrl || null;
+  if ("tags" in patch) row.tags = patch.tags ?? null;
+  if ("available" in patch) row.available = patch.available;
+  if ("allergens" in patch) row.allergens = patch.allergens ?? null;
+  if ("translations" in patch) row.translations = patch.translations ?? null;
+  if (Object.keys(row).length === 0) return;
   const { error } = await supabase.from("dishes").update(row).eq("id", id);
   if (error) logError("updateDishRow", error);
 }
