@@ -37,17 +37,27 @@ const KIND_CONTEXT: Record<TranslateKind, string> = {
   dish_description: "a longer description of a dish (ingredients, prep)",
 };
 
+export type TranslateResult =
+  | {
+      ok: true;
+      data: Partial<Record<Exclude<Locale, "fr">, string>>;
+    }
+  | { ok: false; error: string };
+
 export async function translateText(
   text: string,
   kind: TranslateKind
-): Promise<Partial<Record<Exclude<Locale, "fr">, string>> | null> {
+): Promise<TranslateResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    console.error("[translate] ANTHROPIC_API_KEY non configurée");
-    return null;
+    return {
+      ok: false,
+      error:
+        "ANTHROPIC_API_KEY non définie côté serveur. Vérifie dans Vercel > Settings > Environment Variables.",
+    };
   }
   const trimmed = text.trim();
-  if (!trimmed) return {};
+  if (!trimmed) return { ok: true, data: {} };
 
   const languageList = TARGET_LOCALES.map(
     (l) => `- "${l}": ${LOCALE_NAMES[l]}`
@@ -70,8 +80,9 @@ Guidelines:
 French text:
 """${trimmed}"""`;
 
+  let res: Response;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "x-api-key": apiKey,
@@ -79,31 +90,65 @@ French text:
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
+        model: "claude-haiku-4-5",
         max_tokens: 1024,
         messages: [{ role: "user", content: prompt }],
       }),
     });
-    if (!res.ok) {
-      const body = await res.text();
-      console.error("[translate] anthropic error", res.status, body);
-      return null;
-    }
-    const data = await res.json();
-    const content = data.content?.[0]?.text;
-    if (typeof content !== "string") return null;
-    const jsonStart = content.indexOf("{");
-    const jsonEnd = content.lastIndexOf("}");
-    if (jsonStart < 0 || jsonEnd < 0) return null;
-    const slice = content.slice(jsonStart, jsonEnd + 1);
-    const parsed = JSON.parse(slice) as Record<string, string>;
-    const out: Partial<Record<Exclude<Locale, "fr">, string>> = {};
-    for (const l of TARGET_LOCALES) {
-      if (typeof parsed[l] === "string") out[l] = parsed[l];
-    }
-    return out;
   } catch (err) {
-    console.error("[translate] exception", err);
-    return null;
+    return {
+      ok: false,
+      error: `Échec réseau vers api.anthropic.com : ${err instanceof Error ? err.message : String(err)}`,
+    };
   }
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    return {
+      ok: false,
+      error: `Anthropic API a renvoyé HTTP ${res.status}. Détail : ${body.slice(0, 300)}`,
+    };
+  }
+
+  let data: { content?: Array<{ text?: string }> };
+  try {
+    data = await res.json();
+  } catch (err) {
+    return {
+      ok: false,
+      error: `Réponse Anthropic non-JSON : ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+
+  const content = data.content?.[0]?.text;
+  if (typeof content !== "string") {
+    return {
+      ok: false,
+      error: `Réponse Anthropic sans contenu texte : ${JSON.stringify(data).slice(0, 300)}`,
+    };
+  }
+
+  const jsonStart = content.indexOf("{");
+  const jsonEnd = content.lastIndexOf("}");
+  if (jsonStart < 0 || jsonEnd < 0) {
+    return {
+      ok: false,
+      error: `JSON introuvable dans la réponse Claude : ${content.slice(0, 200)}`,
+    };
+  }
+  const slice = content.slice(jsonStart, jsonEnd + 1);
+  let parsed: Record<string, string>;
+  try {
+    parsed = JSON.parse(slice);
+  } catch (err) {
+    return {
+      ok: false,
+      error: `JSON invalide : ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
+  const out: Partial<Record<Exclude<Locale, "fr">, string>> = {};
+  for (const l of TARGET_LOCALES) {
+    if (typeof parsed[l] === "string") out[l] = parsed[l];
+  }
+  return { ok: true, data: out };
 }

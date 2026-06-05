@@ -176,9 +176,9 @@ export async function POST(req: NextRequest) {
 
   if (tagline) {
     const trans = await translateText(tagline, "tagline");
-    if (trans && Object.keys(trans).length > 0) {
+    if (trans.ok && Object.keys(trans.data).length > 0) {
       const translations: Record<string, { tagline: string }> = {};
-      for (const [locale, translated] of Object.entries(trans)) {
+      for (const [locale, translated] of Object.entries(trans.data)) {
         if (translated) translations[locale] = { tagline: translated };
       }
       await admin

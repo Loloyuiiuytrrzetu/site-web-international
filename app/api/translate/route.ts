@@ -53,11 +53,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Texte trop long." }, { status: 400 });
   }
   const result = await translateText(text, kind);
-  if (!result) {
-    return NextResponse.json(
-      { error: "Échec de la traduction." },
-      { status: 500 }
-    );
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: 500 });
   }
-  return NextResponse.json({ translations: result });
+  return NextResponse.json({ translations: result.data });
 }
