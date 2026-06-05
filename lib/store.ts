@@ -27,6 +27,8 @@ type State = {
 type Actions = {
   reset: () => void;
   setCurrentRestaurant: (id: string) => void;
+  loadFromSupabase: (restaurant: ManagedRestaurant) => void;
+  loadAllFromSupabase: (restaurants: ManagedRestaurant[]) => void;
   createRestaurant: (
     init: Pick<Restaurant, "name" | "slug"> &
       Partial<Pick<Restaurant, "tagline" | "defaultLocale">> & {
@@ -98,6 +100,25 @@ export const useRestaurantStore = create<State & Actions>()(
       reset: () => set(initialState),
 
       setCurrentRestaurant: (id) => set({ currentRestaurantId: id }),
+
+      loadFromSupabase: (restaurant) =>
+        set({
+          restaurants: [restaurant],
+          currentRestaurantId: restaurant.id,
+        }),
+
+      loadAllFromSupabase: (restaurants) =>
+        set((s) => {
+          const stillHasCurrent = restaurants.some(
+            (r) => r.id === s.currentRestaurantId
+          );
+          return {
+            restaurants,
+            currentRestaurantId: stillHasCurrent
+              ? s.currentRestaurantId
+              : restaurants[0]?.id ?? "",
+          };
+        }),
 
       createRestaurant: (init) => {
         const id = uid();

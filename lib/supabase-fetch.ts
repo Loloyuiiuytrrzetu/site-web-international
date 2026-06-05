@@ -1,5 +1,6 @@
 import { supabase } from "./supabase";
 import type { Restaurant, Category, Dish, Locale } from "./types";
+import type { ManagedRestaurant, RestaurantStatus } from "./store";
 
 type DbDish = {
   id: string;
@@ -40,8 +41,13 @@ type DbRestaurant = {
   contact: Restaurant["contact"];
   translations: Restaurant["translations"] | null;
   status: string;
+  plan: string | null;
+  created_at: string;
   categories: DbCategory[];
 };
+
+const SELECT_FULL =
+  "id, slug, name, tagline, logo_url, cover_url, locales, default_locale, theme, contact, translations, status, plan, created_at, categories(id, name, tagline, image_url, translations, sort_order, dishes(id, name, subtitle, description, price_amount, price_currency, image_url, model3d_url, tags, available, allergens, translations, sort_order))";
 
 function mapDish(d: DbDish): Dish {
   return {
@@ -73,10 +79,11 @@ function mapCategory(c: DbCategory): Category {
   };
 }
 
-function mapRestaurant(r: DbRestaurant): Restaurant & { status: string } {
+function mapRestaurant(r: DbRestaurant): ManagedRestaurant {
   const categories = [...r.categories]
     .sort((a, b) => a.sort_order - b.sort_order)
     .map(mapCategory);
+  const plan = (r.plan ?? "starter") as ManagedRestaurant["plan"];
   return {
     id: r.id,
     slug: r.slug,
@@ -90,18 +97,18 @@ function mapRestaurant(r: DbRestaurant): Restaurant & { status: string } {
     contact: r.contact,
     translations: r.translations ?? undefined,
     categories,
-    status: r.status,
+    status: (r.status as RestaurantStatus) ?? "active",
+    plan,
+    createdAt: r.created_at,
   };
 }
 
 export async function fetchRestaurantBySlug(
   slug: string
-): Promise<(Restaurant & { status: string }) | null> {
+): Promise<ManagedRestaurant | null> {
   const { data, error } = await supabase
     .from("restaurants")
-    .select(
-      "id, slug, name, tagline, logo_url, cover_url, locales, default_locale, theme, contact, translations, status, categories(id, name, tagline, image_url, translations, sort_order, dishes(id, name, subtitle, description, price_amount, price_currency, image_url, model3d_url, tags, available, allergens, translations, sort_order))"
-    )
+    .select(SELECT_FULL)
     .eq("slug", slug)
     .maybeSingle();
 
@@ -111,4 +118,35 @@ export async function fetchRestaurantBySlug(
   }
   if (!data) return null;
   return mapRestaurant(data as unknown as DbRestaurant);
+}
+
+export async function fetchRestaurantById(
+  id: string
+): Promise<ManagedRestaurant | null> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select(SELECT_FULL)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    console.error("fetchRestaurantById error:", error);
+    return null;
+  }
+  if (!data) return null;
+  return mapRestaurant(data as unknown as DbRestaurant);
+}
+
+export async function fetchAllManagedRestaurants(): Promise<ManagedRestaurant[]> {
+  const { data, error } = await supabase
+    .from("restaurants")
+    .select(SELECT_FULL)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("fetchAllManagedRestaurants error:", error);
+    return [];
+  }
+  if (!data) return [];
+  return (data as unknown as DbRestaurant[]).map(mapRestaurant);
 }

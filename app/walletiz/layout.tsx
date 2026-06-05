@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { WalletizShell } from "./_components/WalletizShell";
 import { AuthGate } from "../components/AuthGate";
+import { WalletizDataLoader } from "../components/WalletizDataLoader";
 
 export const metadata: Metadata = {
   title: "Walletiz — Super admin",
@@ -14,7 +15,9 @@ export default function WalletizLayout({
 }) {
   return (
     <AuthGate role="walletiz">
-      <WalletizShell>{children}</WalletizShell>
+      <WalletizDataLoader>
+        <WalletizShell>{children}</WalletizShell>
+      </WalletizDataLoader>
     </AuthGate>
   );
 }
