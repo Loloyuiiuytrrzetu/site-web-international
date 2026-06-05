@@ -24,16 +24,11 @@ CREATE POLICY "profiles_select_own" ON public.profiles
   FOR SELECT
   USING (auth.uid() = id);
 
--- 2b) Les super-admins (role 'walletiz') peuvent tout lire
-DROP POLICY IF EXISTS "profiles_select_walletiz" ON public.profiles;
-CREATE POLICY "profiles_select_walletiz" ON public.profiles
-  FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = auth.uid() AND p.role = 'walletiz'
-    )
-  );
+-- NOTE : on ne crée PAS de politique "walletiz peut tout lire" ici, car elle
+-- déclencherait une récursion infinie (SELECT sur profiles déclenche un SELECT
+-- sur profiles pour vérifier la politique). Quand on aura besoin d'un super-admin
+-- qui lit tous les profils, on utilisera une fonction SECURITY DEFINER ou un
+-- claim JWT custom.
 
 -- 3) Trigger : à chaque nouvel utilisateur dans auth.users, créer une ligne profiles
 -- Le rôle et restaurant_id sont lus depuis raw_user_meta_data lors de l'inscription
