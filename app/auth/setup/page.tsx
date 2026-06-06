@@ -3,9 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Eye, EyeOff, Loader2, ShieldAlert } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth";
 import { WALLETIZ_BRAND } from "@/lib/brand";
 
 const BRAND = WALLETIZ_BRAND.colors.primary;
@@ -20,18 +21,67 @@ export default function AuthSetupPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
+  const ranRef = useRef(false);
 
   useEffect(() => {
-    const timer = setTimeout(async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session?.user) {
+    if (ranRef.current) return;
+    ranRef.current = true;
+
+    async function exchange() {
+      try {
+        const rawHash = window.location.hash.startsWith("#")
+          ? window.location.hash.substring(1)
+          : "";
+        const hashParams = new URLSearchParams(rawHash);
+        const accessToken = hashParams.get("access_token");
+        const refreshToken = hashParams.get("refresh_token");
+        const errorDesc = hashParams.get("error_description");
+
+        if (errorDesc) {
+          setError(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
+          setStatus("no-session");
+          return;
+        }
+
+        if (!accessToken || !refreshToken) {
+          setError(
+            "Aucun lien d'activation détecté. Demandez à votre administrateur de vous renvoyer une invitation."
+          );
+          setStatus("no-session");
+          return;
+        }
+
+        await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+
+        const { data, error: setErr } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+        if (setErr || !data.session?.user) {
+          setError(
+            setErr?.message ??
+              "Le lien d'activation est invalide ou a expiré (max 24h)."
+          );
+          setStatus("no-session");
+          return;
+        }
+
         setEmail(data.session.user.email ?? "");
         setStatus("ready");
-      } else {
+
+        window.history.replaceState(
+          {},
+          "",
+          window.location.pathname + window.location.search
+        );
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erreur inattendue.");
         setStatus("no-session");
       }
-    }, 600);
-    return () => clearTimeout(timer);
+    }
+
+    void exchange();
   }, []);
 
   const submit = async (e: React.FormEvent) => {
@@ -53,6 +103,7 @@ export default function AuthSetupPage() {
       return;
     }
     setStatus("done");
+    await useAuth.getState().refresh();
     setTimeout(() => router.push("/admin"), 1200);
   };
 
@@ -94,8 +145,8 @@ export default function AuthSetupPage() {
                   Lien invalide ou expiré
                 </p>
                 <p className="text-xs text-neutral-600">
-                  Demandez à votre administrateur Walletiz de vous renvoyer une
-                  invitation.
+                  {error ??
+                    "Demandez à votre administrateur Walletiz de vous renvoyer une invitation."}
                 </p>
                 <Link
                   href="/login"
@@ -109,7 +160,7 @@ export default function AuthSetupPage() {
 
             {status === "done" && (
               <div className="flex flex-col items-center gap-3 py-4 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-2xl">
                   ✓
                 </div>
                 <p className="text-sm font-semibold text-neutral-900">
@@ -123,9 +174,17 @@ export default function AuthSetupPage() {
 
             {(status === "ready" || status === "saving") && (
               <form onSubmit={submit} className="flex flex-col gap-3">
-                <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-2.5 text-xs text-neutral-600">
-                  Vous activez le compte de{" "}
-                  <span className="font-semibold text-neutral-900">{email}</span>
+                <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-700">
+                    Vous activez le compte
+                  </p>
+                  <p className="mt-0.5 text-sm font-bold text-neutral-900 break-all">
+                    {email}
+                  </p>
+                  <p className="mt-1 text-[11px] text-amber-800">
+                    ⚠️ Vérifiez bien que c&apos;est votre adresse email. Sinon
+                    fermez cette page et utilisez votre propre lien.
+                  </p>
                 </div>
 
                 <label className="block">
