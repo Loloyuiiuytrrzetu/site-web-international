@@ -41,12 +41,13 @@ function buildInviteHtml({
             <td style="padding:32px;">
               <h2 style="margin:0 0 12px;font-size:22px;color:#1f2937;">Bienvenue ${escapeHtml(restaurantName)} !</h2>
               <p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#4b5563;">
-                Votre compte restaurateur Walletiz a été créé. Pour activer votre compte, utilisez le <strong>code à 6 chiffres</strong> ci-dessous :
+                Votre compte restaurateur Walletiz a été créé. Pour activer votre compte, utilisez le <strong>code d'activation</strong> ci-dessous :
               </p>
 
               <div style="background:#faf7f2;border:2px solid #7a1226;border-radius:14px;padding:24px;text-align:center;margin:20px 0;">
                 <p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7a1226;">Votre code d'activation</p>
-                <p style="margin:0;font-size:38px;font-weight:700;letter-spacing:8px;color:#1f2937;font-family:'Courier New',monospace;">${escapeHtml(otpCode)}</p>
+                <p style="margin:0;font-size:38px;font-weight:700;letter-spacing:6px;color:#1f2937;font-family:'Courier New',monospace;">${escapeHtml(otpCode)}</p>
+                <p style="margin:6px 0 0;font-size:10px;color:#7a1226;">Tapez-le en entier, zéros du début inclus</p>
               </div>
 
               <p style="margin:24px 0 12px;font-size:14px;color:#4b5563;line-height:1.5;">
@@ -54,7 +55,7 @@ function buildInviteHtml({
               </p>
               <ol style="margin:0;padding-left:20px;font-size:14px;color:#4b5563;line-height:1.7;">
                 <li>Cliquez sur le bouton ci-dessous</li>
-                <li>Entrez le code à 6 chiffres ci-dessus</li>
+                <li>Entrez votre email et le code complet</li>
                 <li>Choisissez votre mot de passe</li>
               </ol>
 

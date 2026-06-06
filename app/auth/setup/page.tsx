@@ -93,8 +93,10 @@ export default function AuthSetupPage() {
     setError(null);
     const cleanEmail = email.trim().toLowerCase();
     const cleanCode = code.replace(/\s/g, "");
-    if (!cleanEmail || !cleanCode || cleanCode.length !== 6) {
-      setError("Renseignez votre email et le code à 6 chiffres reçu.");
+    if (!cleanEmail || !cleanCode || cleanCode.length < 6) {
+      setError(
+        "Renseignez votre email et le code complet reçu (toutes les chiffres, zéros inclus)."
+      );
       return;
     }
     setStatus("verifying-code");
@@ -196,7 +198,7 @@ export default function AuthSetupPage() {
 
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-medium text-neutral-700">
-                    Code à 6 chiffres
+                    Code d&apos;activation
                   </span>
                   <input
                     type="text"
@@ -205,12 +207,16 @@ export default function AuthSetupPage() {
                     autoComplete="one-time-code"
                     value={code}
                     onChange={(e) =>
-                      setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      setCode(e.target.value.replace(/\D/g, "").slice(0, 12))
                     }
-                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-center text-xl font-mono font-semibold tracking-[8px] shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200"
-                    placeholder="000000"
-                    maxLength={6}
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-center text-xl font-mono font-semibold tracking-[6px] shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200"
+                    placeholder="Tapez le code complet"
+                    maxLength={12}
                   />
+                  <span className="mt-1 block text-[10px] text-neutral-500">
+                    Le code peut faire entre 6 et 10 chiffres. Tapez-le en entier,
+                    zéros du début inclus.
+                  </span>
                 </label>
 
                 {error && (
