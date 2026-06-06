@@ -8,10 +8,17 @@ export type EmailResult =
 type InviteParams = {
   to: string;
   inviteLink: string;
+  otpCode: string;
   restaurantName: string;
+  setupUrl: string;
 };
 
-function buildInviteHtml({ inviteLink, restaurantName }: Omit<InviteParams, "to">): string {
+function buildInviteHtml({
+  inviteLink,
+  otpCode,
+  restaurantName,
+  setupUrl,
+}: Omit<InviteParams, "to">): string {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -34,21 +41,39 @@ function buildInviteHtml({ inviteLink, restaurantName }: Omit<InviteParams, "to"
             <td style="padding:32px;">
               <h2 style="margin:0 0 12px;font-size:22px;color:#1f2937;">Bienvenue ${escapeHtml(restaurantName)} !</h2>
               <p style="margin:0 0 18px;font-size:15px;line-height:1.5;color:#4b5563;">
-                Votre compte restaurateur Walletiz a été créé. Cliquez sur le bouton ci-dessous pour activer votre compte et définir votre mot de passe.
+                Votre compte restaurateur Walletiz a été créé. Pour activer votre compte, utilisez le <strong>code à 6 chiffres</strong> ci-dessous :
               </p>
+
+              <div style="background:#faf7f2;border:2px solid #7a1226;border-radius:14px;padding:24px;text-align:center;margin:20px 0;">
+                <p style="margin:0 0 8px;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7a1226;">Votre code d'activation</p>
+                <p style="margin:0;font-size:38px;font-weight:700;letter-spacing:8px;color:#1f2937;font-family:'Courier New',monospace;">${escapeHtml(otpCode)}</p>
+              </div>
+
+              <p style="margin:24px 0 12px;font-size:14px;color:#4b5563;line-height:1.5;">
+                <strong>Comment activer mon compte ?</strong>
+              </p>
+              <ol style="margin:0;padding-left:20px;font-size:14px;color:#4b5563;line-height:1.7;">
+                <li>Cliquez sur le bouton ci-dessous</li>
+                <li>Entrez le code à 6 chiffres ci-dessus</li>
+                <li>Choisissez votre mot de passe</li>
+              </ol>
+
               <p style="margin:24px 0;text-align:center;">
-                <a href="${inviteLink}" style="display:inline-block;background:#7a1226;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
-                  Activer mon compte
+                <a href="${setupUrl}" style="display:inline-block;background:#7a1226;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;">
+                  Aller à la page d'activation
                 </a>
               </p>
-              <p style="margin:24px 0 0;font-size:13px;color:#6b7280;line-height:1.5;">
-                Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :
+
+              <p style="margin:32px 0 0;padding:12px;background:#f9fafb;border-radius:6px;font-size:12px;color:#6b7280;line-height:1.5;">
+                <strong>Astuce :</strong> Si le bouton ne fonctionne pas, allez sur <a href="${setupUrl}" style="color:#7a1226;">${setupUrl}</a> et entrez votre email + le code.
               </p>
-              <p style="margin:8px 0 0;font-size:12px;word-break:break-all;color:#9ca3af;background:#f9fafb;padding:10px;border-radius:6px;">
-                ${inviteLink}
+
+              <p style="margin:16px 0 0;font-size:11px;color:#9ca3af;line-height:1.5;">
+                Ce code est valable 1 heure. Si vous n'attendiez pas cet email, ignorez-le simplement.
               </p>
-              <p style="margin:24px 0 0;font-size:12px;color:#9ca3af;line-height:1.5;">
-                Ce lien est valable 1 heure. Si vous n'attendiez pas cet email, ignorez-le simplement.
+
+              <p style="margin:8px 0 0;font-size:10px;color:#cbd5e1;line-height:1.4;word-break:break-all;">
+                Lien direct (avancé) : ${inviteLink}
               </p>
             </td>
           </tr>
@@ -85,7 +110,7 @@ export async function sendInviteEmail(params: InviteParams): Promise<EmailResult
   }
 
   const html = buildInviteHtml(params);
-  const subject = `Bienvenue sur Walletiz — Activez votre compte ${params.restaurantName}`;
+  const subject = `Code d'activation Walletiz : ${params.otpCode}`;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {

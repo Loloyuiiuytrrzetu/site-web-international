@@ -4,20 +4,34 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Eye, EyeOff, Loader2, ShieldAlert } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  Mail,
+  ShieldAlert,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { WALLETIZ_BRAND } from "@/lib/brand";
 
 const BRAND = WALLETIZ_BRAND.colors.primary;
 
-type Status = "loading" | "ready" | "no-session" | "saving" | "done" | "error";
+type Status =
+  | "loading"
+  | "code-needed"
+  | "verifying-code"
+  | "ready"
+  | "saving"
+  | "done";
 
 export default function AuthSetupPage() {
   const router = useRouter();
   const [status, setStatus] = useState<Status>("loading");
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -27,7 +41,7 @@ export default function AuthSetupPage() {
     if (ranRef.current) return;
     ranRef.current = true;
 
-    async function exchange() {
+    async function tryHashTokens() {
       try {
         const rawHash = window.location.hash.startsWith("#")
           ? window.location.hash.substring(1)
@@ -38,16 +52,12 @@ export default function AuthSetupPage() {
         const errorDesc = hashParams.get("error_description");
 
         if (errorDesc) {
-          setError(decodeURIComponent(errorDesc.replace(/\+/g, " ")));
-          setStatus("no-session");
+          setStatus("code-needed");
           return;
         }
 
         if (!accessToken || !refreshToken) {
-          setError(
-            "Aucun lien d'activation détecté. Demandez à votre administrateur de vous renvoyer une invitation."
-          );
-          setStatus("no-session");
+          setStatus("code-needed");
           return;
         }
 
@@ -59,32 +69,53 @@ export default function AuthSetupPage() {
         });
 
         if (setErr || !data.session?.user) {
-          setError(
-            setErr?.message ??
-              "Le lien d'activation est invalide ou a expiré (max 24h)."
-          );
-          setStatus("no-session");
+          setStatus("code-needed");
           return;
         }
 
         setEmail(data.session.user.email ?? "");
         setStatus("ready");
-
         window.history.replaceState(
           {},
           "",
           window.location.pathname + window.location.search
         );
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erreur inattendue.");
-        setStatus("no-session");
+      } catch {
+        setStatus("code-needed");
       }
     }
 
-    void exchange();
+    void tryHashTokens();
   }, []);
 
-  const submit = async (e: React.FormEvent) => {
+  const submitCode = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanCode = code.replace(/\s/g, "");
+    if (!cleanEmail || !cleanCode || cleanCode.length !== 6) {
+      setError("Renseignez votre email et le code à 6 chiffres reçu.");
+      return;
+    }
+    setStatus("verifying-code");
+    await supabase.auth.signOut({ scope: "local" }).catch(() => {});
+    const { data, error: verifyErr } = await supabase.auth.verifyOtp({
+      email: cleanEmail,
+      token: cleanCode,
+      type: "invite",
+    });
+    if (verifyErr || !data.session?.user) {
+      setStatus("code-needed");
+      setError(
+        verifyErr?.message ?? "Code invalide ou expiré. Vérifiez votre email."
+      );
+      return;
+    }
+    setEmail(data.session.user.email ?? cleanEmail);
+    setStatus("ready");
+  };
+
+  const submitPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     if (password.length < 8) {
@@ -125,37 +156,100 @@ export default function AuthSetupPage() {
                 Activez votre compte
               </h1>
               <p className="mt-1 text-sm text-neutral-600">
-                Choisissez le mot de passe que vous utiliserez pour vous connecter.
+                Entrez l&apos;email et le code reçu par mail.
               </p>
             </div>
 
             {status === "loading" && (
               <div className="flex items-center justify-center gap-2 py-8 text-sm text-neutral-500">
                 <Loader2 size={16} className="animate-spin" />
-                Vérification du lien...
+                Vérification...
               </div>
             )}
 
-            {status === "no-session" && (
-              <div className="flex flex-col items-center gap-3 py-4 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-red-700">
-                  <ShieldAlert size={20} />
+            {(status === "code-needed" || status === "verifying-code") && (
+              <form onSubmit={submitCode} className="flex flex-col gap-3">
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900">
+                  <p className="flex items-center gap-1.5 font-semibold">
+                    <Mail size={14} />
+                    Vérifiez votre boîte mail
+                  </p>
+                  <p className="mt-1">
+                    Vous y trouverez un code à 6 chiffres à entrer ci-dessous.
+                  </p>
                 </div>
-                <p className="text-sm font-semibold text-neutral-900">
-                  Lien invalide ou expiré
-                </p>
-                <p className="text-xs text-neutral-600">
-                  {error ??
-                    "Demandez à votre administrateur Walletiz de vous renvoyer une invitation."}
-                </p>
-                <Link
-                  href="/login"
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold"
-                  style={{ color: BRAND }}
+
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-medium text-neutral-700">
+                    Votre email
+                  </span>
+                  <input
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200"
+                    placeholder="vous@restaurant.com"
+                  />
+                </label>
+
+                <label className="block">
+                  <span className="mb-1.5 block text-xs font-medium text-neutral-700">
+                    Code à 6 chiffres
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    autoComplete="one-time-code"
+                    value={code}
+                    onChange={(e) =>
+                      setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-center text-xl font-mono font-semibold tracking-[8px] shadow-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-200"
+                    placeholder="000000"
+                    maxLength={6}
+                  />
+                </label>
+
+                {error && (
+                  <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                    <ShieldAlert size={14} />
+                    {error}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === "verifying-code"}
+                  className="mt-2 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition active:scale-95 disabled:opacity-60"
+                  style={{ backgroundColor: BRAND }}
                 >
-                  Aller à la page de connexion
-                </Link>
-              </div>
+                  {status === "verifying-code" ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Vérification...
+                    </>
+                  ) : (
+                    <>
+                      Vérifier le code
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+
+                <p className="mt-2 text-center text-xs text-neutral-500">
+                  Pas de code ?{" "}
+                  <Link
+                    href="/login"
+                    className="font-semibold"
+                    style={{ color: BRAND }}
+                  >
+                    Aller à la connexion
+                  </Link>
+                </p>
+              </form>
             )}
 
             {status === "done" && (
@@ -173,17 +267,16 @@ export default function AuthSetupPage() {
             )}
 
             {(status === "ready" || status === "saving") && (
-              <form onSubmit={submit} className="flex flex-col gap-3">
-                <div className="rounded-lg border-2 border-amber-300 bg-amber-50 p-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-700">
-                    Vous activez le compte
+              <form onSubmit={submitPassword} className="flex flex-col gap-3">
+                <div className="rounded-lg border-2 border-emerald-300 bg-emerald-50 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
+                    ✓ Code vérifié — Compte
                   </p>
                   <p className="mt-0.5 text-sm font-bold text-neutral-900 break-all">
                     {email}
                   </p>
-                  <p className="mt-1 text-[11px] text-amber-800">
-                    ⚠️ Vérifiez bien que c&apos;est votre adresse email. Sinon
-                    fermez cette page et utilisez votre propre lien.
+                  <p className="mt-1 text-[11px] text-emerald-800">
+                    Choisissez maintenant votre mot de passe.
                   </p>
                 </div>
 

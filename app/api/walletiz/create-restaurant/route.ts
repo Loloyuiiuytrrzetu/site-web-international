@@ -181,6 +181,8 @@ export async function POST(req: NextRequest) {
   const emailRes = await sendInviteEmail({
     to: ownerEmail,
     inviteLink: linkData.properties.action_link,
+    otpCode: linkData.properties.email_otp ?? "",
+    setupUrl: redirectTo,
     restaurantName: name,
   });
 
