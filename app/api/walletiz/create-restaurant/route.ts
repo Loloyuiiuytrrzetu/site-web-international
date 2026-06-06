@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { translateText } from "@/lib/translate-server";
+import { sendInviteEmail } from "@/lib/email-resend";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -152,22 +153,23 @@ export async function POST(req: NextRequest) {
   const siteOrigin = getSiteOrigin(req);
   const redirectTo = `${siteOrigin}/auth/setup`;
 
-  const { error: inviteErr } = await admin.auth.admin.inviteUserByEmail(
-    ownerEmail,
-    {
+  const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
+    type: "invite",
+    email: ownerEmail,
+    options: {
       data: {
         role: "restaurateur",
         restaurant_id: resto.id,
       },
       redirectTo,
-    }
-  );
+    },
+  });
 
-  if (inviteErr) {
+  if (linkErr || !linkData?.properties?.action_link) {
     await admin.from("restaurants").delete().eq("id", resto.id);
-    const msg = inviteErr.message.includes("already")
+    const msg = linkErr?.message.includes("already")
       ? "Un utilisateur avec cet email existe déjà."
-      : inviteErr.message;
+      : linkErr?.message ?? "Échec de génération du lien d'invitation.";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
@@ -175,6 +177,21 @@ export async function POST(req: NextRequest) {
     .from("profiles")
     .update({ role: "restaurateur", restaurant_id: resto.id })
     .eq("email", ownerEmail);
+
+  const emailRes = await sendInviteEmail({
+    to: ownerEmail,
+    inviteLink: linkData.properties.action_link,
+    restaurantName: name,
+  });
+
+  if (!emailRes.ok) {
+    return NextResponse.json(
+      {
+        error: `Le restaurant a été créé mais l'email n'a pas pu être envoyé. ${emailRes.error}`,
+      },
+      { status: 500 }
+    );
+  }
 
   if (tagline) {
     const trans = await translateText(tagline, "tagline");
