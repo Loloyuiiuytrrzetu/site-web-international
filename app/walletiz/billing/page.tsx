@@ -5,7 +5,8 @@ import { useRestaurantStore } from "@/lib/store";
 import { Card, PageHeader } from "../../admin/_components/ui";
 import { StatusBadge } from "../page";
 
-const PLAN_PRICE = { starter: 19, pro: 39, enterprise: 99 } as const;
+const PLAN_PRICE = { pro: 79, custom: 140 } as const;
+const PLAN_LABEL = { pro: "Pro", custom: "Sur mesure" } as const;
 
 export default function BillingPage() {
   const restaurants = useRestaurantStore((s) => s.restaurants);
@@ -54,8 +55,8 @@ export default function BillingPage() {
                   <td className="py-3 pr-3 font-medium text-neutral-900">
                     {r.name}
                   </td>
-                  <td className="py-3 pr-3 capitalize text-neutral-700">
-                    {r.plan}
+                  <td className="py-3 pr-3 text-neutral-700">
+                    {PLAN_LABEL[r.plan]}
                   </td>
                   <td className="py-3 pr-3 font-semibold text-neutral-900">
                     {PLAN_PRICE[r.plan]} €/mois

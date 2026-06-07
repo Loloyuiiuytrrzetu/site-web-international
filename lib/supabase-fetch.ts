@@ -83,7 +83,9 @@ function mapRestaurant(r: DbRestaurant): ManagedRestaurant {
   const categories = [...r.categories]
     .sort((a, b) => a.sort_order - b.sort_order)
     .map(mapCategory);
-  const plan = (r.plan ?? "starter") as ManagedRestaurant["plan"];
+  const rawPlan = r.plan ?? "pro";
+  const plan: ManagedRestaurant["plan"] =
+    rawPlan === "custom" || rawPlan === "enterprise" ? "custom" : "pro";
   return {
     id: r.id,
     slug: r.slug,

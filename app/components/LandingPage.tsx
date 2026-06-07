@@ -238,23 +238,29 @@ function Features() {
 
 const PLANS = [
   {
-    name: "Starter",
-    price: 19,
-    desc: "Pour démarrer",
-    features: ["1 menu digital", "Jusqu'à 50 plats", "Photos HD", "4 langues", "QR code illimité"],
-  },
-  {
     name: "Pro",
-    price: 39,
+    price: 79,
     desc: "Le plus populaire",
     featured: true,
-    features: ["Tout Starter, plus :", "Plats illimités", "Vue 3D des plats", "8 langues", "Statistiques", "Support prioritaire"],
+    features: [
+      "8 langues",
+      "1 QR code",
+      "1 menu digital",
+      "Plats illimités",
+    ],
   },
   {
-    name: "Enterprise",
-    price: 99,
-    desc: "Pour les chaînes",
-    features: ["Tout Pro, plus :", "Multi-établissements", "Domaine personnalisé", "Branding sur mesure", "Support dédié 24/7"],
+    name: "Sur mesure",
+    price: 140,
+    desc: "Pour aller plus loin",
+    features: [
+      "8 langues",
+      "1 QR code",
+      "1 menu digital",
+      "Plats illimités",
+      "Vue 3D des plats",
+      "Assistance sur mesure",
+    ],
   },
 ];
 
@@ -274,7 +280,7 @@ function Pricing() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+        <div className="mx-auto mt-12 grid max-w-3xl gap-5 sm:grid-cols-2">
           {PLANS.map((p) => (
             <div
               key={p.name}

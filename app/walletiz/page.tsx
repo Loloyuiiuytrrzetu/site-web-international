@@ -13,7 +13,8 @@ import {
 import { useRestaurantStore } from "@/lib/store";
 import { Card, PageHeader } from "../admin/_components/ui";
 
-const PLAN_PRICE = { starter: 19, pro: 39, enterprise: 99 } as const;
+const PLAN_PRICE = { pro: 79, custom: 140 } as const;
+const PLAN_LABEL = { pro: "Pro", custom: "Sur mesure" } as const;
 
 export default function WalletizDashboardPage() {
   const restaurants = useRestaurantStore((s) => s.restaurants);
@@ -89,7 +90,7 @@ export default function WalletizDashboardPage() {
                       {r.name}
                     </p>
                     <p className="text-xs text-neutral-500">
-                      Plan {r.plan} · {r.categories.length} catégories
+                      Plan {PLAN_LABEL[r.plan]} · {r.categories.length} catégories
                     </p>
                   </div>
                   <StatusBadge status={r.status} />

@@ -87,9 +87,9 @@ export async function POST(req: NextRequest) {
   const name = body.name?.trim();
   const slug = (body.slug?.trim() || (name ? slugify(name) : "")).trim();
   const tagline = body.tagline?.trim() || null;
-  const plan = ["starter", "pro", "enterprise"].includes(body.plan ?? "")
-    ? (body.plan as "starter" | "pro" | "enterprise")
-    : "starter";
+  const plan = ["pro", "custom"].includes(body.plan ?? "")
+    ? (body.plan as "pro" | "custom")
+    : "pro";
   const ownerEmail = body.ownerEmail?.trim().toLowerCase();
 
   if (!name) {

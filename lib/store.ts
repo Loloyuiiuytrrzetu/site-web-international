@@ -35,7 +35,7 @@ export type RestaurantStatus = "active" | "suspended" | "draft";
 export type ManagedRestaurant = Restaurant & {
   status: RestaurantStatus;
   createdAt: string;
-  plan: "starter" | "pro" | "enterprise";
+  plan: "pro" | "custom";
 };
 
 type State = {
@@ -163,7 +163,7 @@ export const useRestaurantStore = create<State & Actions>()(
           contact: {},
           categories: [],
           status: "active",
-          plan: init.plan ?? "starter",
+          plan: init.plan ?? "pro",
           createdAt: new Date().toISOString(),
         };
         set((s) => ({ restaurants: [...s.restaurants, newR] }));

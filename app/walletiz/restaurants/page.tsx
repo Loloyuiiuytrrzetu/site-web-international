@@ -118,7 +118,7 @@ export default function RestaurantsPage() {
                         <StatusBadge status={r.status} />
                       </div>
                       <p className="text-xs text-neutral-500">
-                        /{r.slug} · Plan {r.plan} · {r.categories.length} cat. ·{" "}
+                        /{r.slug} · Plan {r.plan === "pro" ? "Pro" : "Sur mesure"} · {r.categories.length} cat. ·{" "}
                         {dishCount} plats
                       </p>
                     </div>

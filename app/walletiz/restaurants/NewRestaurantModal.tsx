@@ -32,7 +32,7 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
   const [slug, setSlug] = useState("");
   const [tagline, setTagline] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
-  const [plan, setPlan] = useState<ManagedRestaurant["plan"]>("starter");
+  const [plan, setPlan] = useState<ManagedRestaurant["plan"]>("pro");
   const [slugTouched, setSlugTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -197,26 +197,26 @@ export function NewRestaurantModal({ onClose }: { onClose: () => void }) {
               </Field>
 
               <Field label="Plan d'abonnement">
-                <div className="grid grid-cols-3 gap-2">
-                  {(["starter", "pro", "enterprise"] as const).map((p) => (
+                <div className="grid grid-cols-2 gap-2">
+                  {(
+                    [
+                      { key: "pro", label: "Pro", price: 79 },
+                      { key: "custom", label: "Sur mesure", price: 140 },
+                    ] as const
+                  ).map((p) => (
                     <button
                       type="button"
-                      key={p}
-                      onClick={() => setPlan(p)}
-                      className={`rounded-lg border px-3 py-2 text-xs font-medium capitalize transition ${
-                        plan === p
+                      key={p.key}
+                      onClick={() => setPlan(p.key)}
+                      className={`rounded-lg border px-3 py-2 text-xs font-medium transition ${
+                        plan === p.key
                           ? "border-brand-700 bg-brand-50 text-brand-700"
                           : "border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50"
                       }`}
                     >
-                      {p}
+                      {p.label}
                       <span className="mt-0.5 block text-[10px] text-neutral-500">
-                        {p === "starter"
-                          ? "19 €"
-                          : p === "pro"
-                            ? "39 €"
-                            : "99 €"}
-                        /mois
+                        {p.price} €/mois
                       </span>
                     </button>
                   ))}
