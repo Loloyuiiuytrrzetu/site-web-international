@@ -49,7 +49,7 @@ type DbRestaurant = {
 const SELECT_FULL =
   "id, slug, name, tagline, logo_url, cover_url, locales, default_locale, theme, contact, translations, status, plan, created_at, categories(id, name, tagline, image_url, translations, sort_order, dishes(id, name, subtitle, description, price_amount, price_currency, image_url, model3d_url, tags, available, allergens, translations, sort_order))";
 
-function mapDish(d: DbDish): Dish {
+function mapDish(d: DbDish, allow3D: boolean): Dish {
   return {
     id: d.id,
     name: d.name,
@@ -57,7 +57,7 @@ function mapDish(d: DbDish): Dish {
     description: d.description ?? undefined,
     price: { amount: Number(d.price_amount), currency: d.price_currency },
     imageUrl: d.image_url ?? undefined,
-    model3dUrl: d.model3d_url ?? undefined,
+    model3dUrl: allow3D ? d.model3d_url ?? undefined : undefined,
     tags: d.tags ?? undefined,
     available: d.available,
     allergens: (d.allergens as Dish["allergens"]) ?? undefined,
@@ -65,10 +65,10 @@ function mapDish(d: DbDish): Dish {
   };
 }
 
-function mapCategory(c: DbCategory): Category {
+function mapCategory(c: DbCategory, allow3D: boolean): Category {
   const dishes = [...c.dishes]
     .sort((a, b) => a.sort_order - b.sort_order)
-    .map(mapDish);
+    .map((d) => mapDish(d, allow3D));
   return {
     id: c.id,
     name: c.name,
@@ -80,12 +80,13 @@ function mapCategory(c: DbCategory): Category {
 }
 
 function mapRestaurant(r: DbRestaurant): ManagedRestaurant {
-  const categories = [...r.categories]
-    .sort((a, b) => a.sort_order - b.sort_order)
-    .map(mapCategory);
   const rawPlan = r.plan ?? "pro";
   const plan: ManagedRestaurant["plan"] =
     rawPlan === "custom" || rawPlan === "enterprise" ? "custom" : "pro";
+  const allow3D = plan === "custom";
+  const categories = [...r.categories]
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((c) => mapCategory(c, allow3D));
   return {
     id: r.id,
     slug: r.slug,

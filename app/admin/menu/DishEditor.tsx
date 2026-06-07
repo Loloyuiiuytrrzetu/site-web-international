@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
-import { useRestaurantStore } from "@/lib/store";
+import { Lock, X } from "lucide-react";
+import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import type { Allergen, Dish } from "@/lib/types";
 import { ALLERGENS } from "@/lib/types";
 import { Button, Field, Input, Textarea } from "../_components/ui";
@@ -17,6 +17,8 @@ type Props = {
 export function DishEditor({ categoryId, dish, onClose }: Props) {
   const addDish = useRestaurantStore((s) => s.addDish);
   const updateDish = useRestaurantStore((s) => s.updateDish);
+  const restaurant = useCurrentRestaurant();
+  const has3D = restaurant?.plan === "custom";
 
   const [name, setName] = useState(dish?.name ?? "");
   const [subtitle, setSubtitle] = useState(dish?.subtitle ?? "");
@@ -180,13 +182,29 @@ export function DishEditor({ categoryId, dish, onClose }: Props) {
               value={imageUrl}
               onChange={setImageUrl}
             />
-            <FileUploader
-              label="Modèle 3D (optionnel)"
-              kind="3d"
-              accept=".glb,.gltf,model/gltf-binary,model/gltf+json"
-              value={model3dUrl}
-              onChange={setModel3dUrl}
-            />
+            {has3D ? (
+              <FileUploader
+                label="Modèle 3D (optionnel)"
+                kind="3d"
+                accept=".glb,.gltf,model/gltf-binary,model/gltf+json"
+                value={model3dUrl}
+                onChange={setModel3dUrl}
+              />
+            ) : (
+              <div className="flex flex-col gap-2 rounded-xl border border-dashed border-neutral-300 bg-neutral-50 p-4">
+                <div className="flex items-center gap-2 text-xs font-medium text-neutral-700">
+                  <Lock size={14} className="text-neutral-400" />
+                  Modèle 3D
+                </div>
+                <p className="text-xs leading-relaxed text-neutral-500">
+                  La vue 3D des plats est incluse dans le{" "}
+                  <span className="font-semibold text-neutral-700">
+                    Plan sur mesure
+                  </span>
+                  . Contactez-nous pour passer à ce plan.
+                </p>
+              </div>
+            )}
           </div>
 
           <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm">
