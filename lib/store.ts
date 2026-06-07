@@ -20,6 +20,7 @@ import {
   updateDishRow,
   updateRestaurantContact,
   updateRestaurantInfo,
+  updateRestaurantPlanRow,
   updateRestaurantStatusRow,
   updateRestaurantTheme,
   updateRestaurantTranslations,
@@ -56,6 +57,7 @@ type Actions = {
   ) => string;
   deleteRestaurant: (id: string) => Promise<void>;
   updateRestaurantStatus: (id: string, status: RestaurantStatus) => void;
+  updateRestaurantPlan: (id: string, plan: ManagedRestaurant["plan"]) => void;
 
   updateInfo: (
     patch: Partial<Pick<Restaurant, "name" | "tagline" | "logoUrl" | "coverUrl">>
@@ -208,6 +210,15 @@ export const useRestaurantStore = create<State & Actions>()(
           ),
         }));
         void updateRestaurantStatusRow(id, status);
+      },
+
+      updateRestaurantPlan: (id, plan) => {
+        set((s) => ({
+          restaurants: s.restaurants.map((r) =>
+            r.id === id ? { ...r, plan } : r
+          ),
+        }));
+        void updateRestaurantPlanRow(id, plan);
       },
 
       updateInfo: (patch) => {

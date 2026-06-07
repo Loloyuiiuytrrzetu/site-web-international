@@ -30,6 +30,17 @@ export async function updateRestaurantStatusRow(
   if (error) logError("updateRestaurantStatusRow", error);
 }
 
+export async function updateRestaurantPlanRow(
+  id: string,
+  plan: "pro" | "custom"
+) {
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ plan })
+    .eq("id", id);
+  if (error) logError("updateRestaurantPlanRow", error);
+}
+
 export async function updateRestaurantTranslations(
   id: string,
   translations: Restaurant["translations"]

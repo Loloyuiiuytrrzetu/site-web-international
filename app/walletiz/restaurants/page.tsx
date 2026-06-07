@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
+  ArrowDownCircle,
+  ArrowUpCircle,
   ExternalLink,
   Pause,
   Play,
@@ -20,12 +22,24 @@ export default function RestaurantsPage() {
   const restaurants = useRestaurantStore((s) => s.restaurants);
   const setCurrent = useRestaurantStore((s) => s.setCurrentRestaurant);
   const updateStatus = useRestaurantStore((s) => s.updateRestaurantStatus);
+  const updatePlan = useRestaurantStore((s) => s.updateRestaurantPlan);
   const deleteRestaurant = useRestaurantStore((s) => s.deleteRestaurant);
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   useEffect(() => setMounted(true), []);
+
+  const handleTogglePlan = (
+    id: string,
+    name: string,
+    currentPlan: "pro" | "custom"
+  ) => {
+    const nextPlan = currentPlan === "pro" ? "custom" : "pro";
+    const nextLabel = nextPlan === "custom" ? "Sur mesure (140 €/mois)" : "Pro (79 €/mois)";
+    if (!confirm(`Faire passer "${name}" au plan ${nextLabel} ?`)) return;
+    updatePlan(id, nextPlan);
+  };
 
   const handleDelete = async (id: string, name: string) => {
     if (
@@ -140,6 +154,26 @@ export default function RestaurantsPage() {
                     >
                       <Settings size={12} /> Gérer
                     </Link>
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePlan(r.id, r.name, r.plan)}
+                      className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium hover:bg-neutral-50"
+                      title={
+                        r.plan === "pro"
+                          ? "Passer au plan Sur mesure"
+                          : "Repasser au plan Pro"
+                      }
+                    >
+                      {r.plan === "pro" ? (
+                        <>
+                          <ArrowUpCircle size={12} /> Sur mesure
+                        </>
+                      ) : (
+                        <>
+                          <ArrowDownCircle size={12} /> Pro
+                        </>
+                      )}
+                    </button>
                     <button
                       type="button"
                       onClick={() =>

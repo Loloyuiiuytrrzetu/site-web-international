@@ -146,7 +146,7 @@ export const demoRestaurant: Restaurant = {
           price: { amount: 26, currency: "EUR" },
           imageUrl:
             "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
-          allergens: ["lactose", "celery", "sulfites"],
+          allergens: ["lactose", "celery"],
           available: true,
         },
         {
@@ -195,7 +195,7 @@ export const demoRestaurant: Restaurant = {
           imageUrl:
             "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=800&q=80",
           tags: ["Végétarien"],
-          allergens: ["lactose", "sulfites"],
+          allergens: ["lactose"],
           available: true,
         },
       ],
@@ -584,7 +584,7 @@ export const demoRestaurant: Restaurant = {
           price: { amount: 9, currency: "EUR" },
           imageUrl:
             "https://images.unsplash.com/photo-1605270012917-bf357a1fae9e?auto=format&fit=crop&w=800&q=80",
-          allergens: ["sulfites"],
+          allergens: [],
           available: true,
         },
         {

@@ -18,11 +18,8 @@ export type Allergen =
   | "crustaceans"
   | "fish"
   | "soy"
-  | "mustard"
   | "molluscs"
   | "celery"
-  | "sulfites"
-  | "sesame"
   | "lupin"
   | "mushroom"
   | "onion";
@@ -169,21 +166,6 @@ export const ALLERGENS: {
     },
   },
   {
-    id: "mustard",
-    emoji: "🌭",
-    label: "Moutarde",
-    labels: {
-      fr: "Moutarde",
-      en: "Mustard",
-      ar: "خردل",
-      es: "Mostaza",
-      it: "Senape",
-      de: "Senf",
-      pt: "Mostarda",
-      zh: "芥末",
-    },
-  },
-  {
     id: "celery",
     emoji: "🥬",
     label: "Céleri",
@@ -196,36 +178,6 @@ export const ALLERGENS: {
       de: "Sellerie",
       pt: "Aipo",
       zh: "芹菜",
-    },
-  },
-  {
-    id: "sulfites",
-    emoji: "🍷",
-    label: "Sulfites",
-    labels: {
-      fr: "Sulfites",
-      en: "Sulphites",
-      ar: "كبريتيت",
-      es: "Sulfitos",
-      it: "Solfiti",
-      de: "Sulfite",
-      pt: "Sulfitos",
-      zh: "亚硫酸盐",
-    },
-  },
-  {
-    id: "sesame",
-    emoji: "🫘",
-    label: "Sésame",
-    labels: {
-      fr: "Sésame",
-      en: "Sesame",
-      ar: "سمسم",
-      es: "Sésamo",
-      it: "Sesamo",
-      de: "Sesam",
-      pt: "Sésamo",
-      zh: "芝麻",
     },
   },
   {
