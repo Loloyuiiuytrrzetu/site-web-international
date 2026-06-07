@@ -24,7 +24,27 @@ export default function RestaurantsPage() {
   const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   useEffect(() => setMounted(true), []);
+
+  const handleDelete = async (id: string, name: string) => {
+    if (
+      !confirm(
+        `Supprimer définitivement "${name}" ? Cette action est irréversible et supprimera aussi le compte du restaurateur.`
+      )
+    )
+      return;
+    setDeletingId(id);
+    try {
+      await deleteRestaurant(id);
+    } catch (err) {
+      alert(
+        err instanceof Error ? err.message : "Erreur lors de la suppression."
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const filtered = useMemo(
     () =>
@@ -142,15 +162,9 @@ export default function RestaurantsPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => {
-                        if (
-                          confirm(
-                            `Supprimer définitivement "${r.name}" ? Cette action est irréversible.`
-                          )
-                        )
-                          deleteRestaurant(r.id);
-                      }}
-                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                      onClick={() => handleDelete(r.id, r.name)}
+                      disabled={deletingId === r.id}
+                      className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
                     >
                       <Trash2 size={12} />
                     </button>

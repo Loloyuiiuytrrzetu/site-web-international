@@ -19,6 +19,17 @@ export async function updateRestaurantInfo(
   if (error) logError("updateRestaurantInfo", error);
 }
 
+export async function updateRestaurantStatusRow(
+  id: string,
+  status: "active" | "suspended" | "draft"
+) {
+  const { error } = await supabase
+    .from("restaurants")
+    .update({ status })
+    .eq("id", id);
+  if (error) logError("updateRestaurantStatusRow", error);
+}
+
 export async function updateRestaurantTranslations(
   id: string,
   translations: Restaurant["translations"]

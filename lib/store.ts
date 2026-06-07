@@ -20,6 +20,7 @@ import {
   updateDishRow,
   updateRestaurantContact,
   updateRestaurantInfo,
+  updateRestaurantStatusRow,
   updateRestaurantTheme,
   updateRestaurantTranslations,
 } from "./supabase-mutations";
@@ -53,7 +54,7 @@ type Actions = {
         plan?: ManagedRestaurant["plan"];
       }
   ) => string;
-  deleteRestaurant: (id: string) => void;
+  deleteRestaurant: (id: string) => Promise<void>;
   updateRestaurantStatus: (id: string, status: RestaurantStatus) => void;
 
   updateInfo: (
@@ -169,7 +170,25 @@ export const useRestaurantStore = create<State & Actions>()(
         return id;
       },
 
-      deleteRestaurant: (id) =>
+      deleteRestaurant: async (id) => {
+        const { supabase } = await import("./supabase");
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) {
+          throw new Error("Session expirée, reconnectez-vous.");
+        }
+        const res = await fetch("/api/walletiz/delete-restaurant", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ restaurantId: id }),
+        });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || "Échec de la suppression.");
+        }
         set((s) => {
           const remaining = s.restaurants.filter((r) => r.id !== id);
           return {
@@ -179,14 +198,17 @@ export const useRestaurantStore = create<State & Actions>()(
                 ? remaining[0]?.id ?? ""
                 : s.currentRestaurantId,
           };
-        }),
+        });
+      },
 
-      updateRestaurantStatus: (id, status) =>
+      updateRestaurantStatus: (id, status) => {
         set((s) => ({
           restaurants: s.restaurants.map((r) =>
             r.id === id ? { ...r, status } : r
           ),
-        })),
+        }));
+        void updateRestaurantStatusRow(id, status);
+      },
 
       updateInfo: (patch) => {
         const id = get().currentRestaurantId;
