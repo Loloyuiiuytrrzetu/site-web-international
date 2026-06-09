@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BRAND } from "@/lib/brand";
 
-// Landing page commerciale de Walletiz (destinée aux restaurateurs).
+// Landing page commerciale de Walletiz (destinée aux commerçants).
 export default function Home() {
   return (
     <div className="flex min-h-full flex-col bg-white text-neutral-900">
@@ -14,15 +14,15 @@ export default function Home() {
           {BRAND.name}
         </span>
         <nav className="flex items-center gap-4 text-sm">
-          <Link href="/dashboard" className="hover:underline">
-            Espace resto
+          <Link href="/login" className="hover:underline">
+            Espace pro
           </Link>
           <Link
-            href="/caisse"
+            href="/login"
             className="rounded-lg px-4 py-2 font-semibold text-white"
             style={{ background: BRAND.bordeaux }}
           >
-            Caisse
+            Connexion
           </Link>
         </nav>
       </header>
@@ -39,25 +39,26 @@ export default function Home() {
           <h1 className="mt-4 text-4xl font-extrabold leading-tight md:text-5xl">
             La carte de fidélité{" "}
             <span style={{ color: BRAND.bordeaux }}>digitale</span> de votre
-            restaurant.
+            commerce.
           </h1>
           <p className="mt-4 text-lg text-neutral-600">
-            Fini les cartes papier perdues. Vos clients cumulent leurs tampons
-            directement sur leur téléphone, et reviennent plus souvent.
+            Restaurant, coiffeur, boutique… Fini les cartes papier perdues. Vos
+            clients cumulent leurs tampons sur leur téléphone, et reviennent plus
+            souvent.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
-              href="/dashboard"
+              href="/login"
               className="rounded-xl px-6 py-3 font-semibold text-white shadow-sm"
               style={{ background: BRAND.bordeaux }}
             >
               Essayer gratuitement
             </Link>
             <Link
-              href="/caisse"
+              href="/login"
               className="rounded-xl border border-neutral-200 px-6 py-3 font-semibold"
             >
-              Voir la caisse
+              Espace pro
             </Link>
           </div>
         </div>
@@ -125,14 +126,14 @@ export default function Home() {
       {/* Tarifs */}
       <section className="mx-auto w-full max-w-5xl p-6">
         <h2 className="mb-6 text-center text-2xl font-bold">
-          Un tarif simple, par restaurant
+          Un tarif simple, par commerce
         </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {[
             {
               n: "Starter",
               p: "29€",
-              f: ["1 établissement", "Carte à tampons", "Espace caisse"],
+              f: ["1 commerce", "Carte à tampons", "Scanner QR"],
             },
             {
               n: "Pro",

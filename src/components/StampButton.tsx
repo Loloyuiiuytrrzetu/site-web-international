@@ -19,7 +19,7 @@ export function StampButton({
   function handleClick() {
     startTransition(async () => {
       const res = await addStamp(token);
-      if (res.error) setMessage(res.error);
+      if ("error" in res) setMessage(res.error);
       else if (res.rewarded) setMessage(`🎉 Récompense : ${res.reward} !`);
       else setMessage(`+1 tampon (${res.stampsCount}/${res.goal})`);
     });

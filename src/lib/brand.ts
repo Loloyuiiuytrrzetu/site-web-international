@@ -5,5 +5,5 @@ export const BRAND = {
   bordeaux: "#6e1023",
   bordeauxDark: "#4d0b18",
   bordeauxLight: "#8a1a30",
-  tagline: "La carte de fidélité digitale de votre restaurant.",
+  tagline: "La carte de fidélité digitale de votre commerce.",
 };

@@ -1,5 +1,5 @@
 // Schéma de la base de données — plateforme de cartes de fidélité digitales.
-// Architecture multi-tenant : un seul logiciel, plusieurs restaurants isolés.
+// Architecture multi-tenant : un seul logiciel, plusieurs commerces isolés.
 //
 // On utilise PostgreSQL (compatible avec l'hébergement Vercel + Neon).
 // En local comme en production, la connexion est lue depuis DATABASE_URL.
@@ -13,14 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Un restaurant client de la plateforme (un "tenant").
-model Restaurant {
+/// Un commerce client de la plateforme (un "tenant").
+/// Ce n'est PAS forcément un restaurant : resto, coiffeur, boutique, etc.
+model Business {
   id        String   @id @default(cuid())
   name      String
   slug      String   @unique // identifiant lisible dans les URLs, ex: "chez-mario"
+  category  String?  // type de commerce : "Restaurant", "Coiffeur", "Boutique"…
   logoUrl   String?
   color     String   @default("#6e1023") // couleur de marque (bordeaux par défaut)
-  // Statut de l'abonnement vendu au resto
+  // Connexion du commerçant à son espace (scanner, dashboard…).
+  // L'identifiant de connexion est le `slug`, le mot de passe est haché ici.
+  passwordHash String?
+  // Statut de l'abonnement vendu au commerce
   plan      String   @default("trial") // trial | starter | pro | multi
   createdAt DateTime @default(now())
 
@@ -28,11 +33,11 @@ model Restaurant {
   customers Customer[]
 }
 
-/// Le programme de fidélité d'un resto : "X tampons = 1 récompense".
+/// Le programme de fidélité d'un commerce : "X tampons = 1 récompense".
 model LoyaltyProgram {
   id           String   @id @default(cuid())
-  restaurantId String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  businessId   String
+  business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   name         String   // ex: "Carte café"
   stampsGoal   Int      @default(10) // nombre de tampons pour gagner
@@ -43,16 +48,19 @@ model LoyaltyProgram {
   cards        StampCard[]
 }
 
-/// Un client final d'un restaurant.
+/// Un client final d'un commerce.
+/// Renseigné lors de l'inscription (1er scan) : prénom, nom, anniversaire.
 model Customer {
-  id           String   @id @default(cuid())
-  restaurantId String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id           String    @id @default(cuid())
+  businessId   String
+  business     Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
-  name         String?
+  firstName    String?
+  lastName     String?
+  birthdate    DateTime? // date d'anniversaire (pour les promos d'anniversaire)
   phone        String?
   email        String?
-  createdAt    DateTime @default(now())
+  createdAt    DateTime  @default(now())
 
   cards        StampCard[]
 }

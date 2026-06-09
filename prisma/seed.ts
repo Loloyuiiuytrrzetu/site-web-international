@@ -1,24 +1,28 @@
-// Données de démonstration : un restaurant fictif avec un programme de fidélité
+// Données de démonstration : un commerce fictif avec un programme de fidélité
 // et un client déjà inscrit, pour pouvoir tester l'app immédiatement.
 import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "../src/lib/password";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // Seed non destructif : on ne crée la démo que si la base est vide.
   // Ainsi on peut le relancer à chaque déploiement sans effacer de vraies données.
-  const existing = await prisma.restaurant.count();
+  const existing = await prisma.business.count();
   if (existing > 0) {
-    console.log("ℹ️  Des restaurants existent déjà — seed ignoré.");
+    console.log("ℹ️  Des commerces existent déjà — seed ignoré.");
     return;
   }
 
-  const resto = await prisma.restaurant.create({
+  const business = await prisma.business.create({
     data: {
       name: "Chez Mario",
       slug: "chez-mario",
+      category: "Restaurant",
       color: "#6e1023",
       plan: "pro",
+      // Mot de passe de connexion de démo : "walletiz".
+      passwordHash: hashPassword("walletiz"),
       programs: {
         create: {
           name: "Carte café",
@@ -28,8 +32,10 @@ async function main() {
       },
       customers: {
         create: {
-          name: "Julie Martin",
+          firstName: "Julie",
+          lastName: "Martin",
           email: "julie@example.com",
+          birthdate: new Date("1995-06-15"),
         },
       },
     },
@@ -39,14 +45,14 @@ async function main() {
   // On crée une carte pour la cliente, avec déjà 3 tampons (pour la démo).
   const card = await prisma.stampCard.create({
     data: {
-      programId: resto.programs[0].id,
-      customerId: resto.customers[0].id,
+      programId: business.programs[0].id,
+      customerId: business.customers[0].id,
       stampsCount: 3,
     },
   });
 
   console.log("✅ Données de démo créées.");
-  console.log(`   Restaurant : ${resto.name} (/dashboard)`);
+  console.log(`   Commerce : ${business.name} (connexion : chez-mario / walletiz)`);
   console.log(`   Carte démo : /c/${card.publicToken}`);
 }
 

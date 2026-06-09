@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Walletiz — Cartes de fidélité digitales pour restaurants",
+  title: "Walletiz — Cartes de fidélité digitales pour tous les commerces",
   description:
     "Remplacez les cartes de fidélité papier par une carte digitale. Vos clients cumulent leurs tampons, vous fidélisez sans effort.",
 };
