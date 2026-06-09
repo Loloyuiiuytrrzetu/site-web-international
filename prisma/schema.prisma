@@ -1,15 +1,15 @@
 // Schéma de la base de données — plateforme de cartes de fidélité digitales.
 // Architecture multi-tenant : un seul logiciel, plusieurs restaurants isolés.
 //
-// Pour le MVP on utilise SQLite (zéro configuration, un simple fichier).
-// Pour passer en production il suffira de changer `provider` en "postgresql".
+// On utilise PostgreSQL (compatible avec l'hébergement Vercel + Neon).
+// En local comme en production, la connexion est lue depuis DATABASE_URL.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

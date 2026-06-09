@@ -5,8 +5,13 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  // On repart propre à chaque seed.
-  await prisma.restaurant.deleteMany();
+  // Seed non destructif : on ne crée la démo que si la base est vide.
+  // Ainsi on peut le relancer à chaque déploiement sans effacer de vraies données.
+  const existing = await prisma.restaurant.count();
+  if (existing > 0) {
+    console.log("ℹ️  Des restaurants existent déjà — seed ignoré.");
+    return;
+  }
 
   const resto = await prisma.restaurant.create({
     data: {

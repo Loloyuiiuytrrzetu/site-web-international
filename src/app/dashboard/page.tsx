@@ -3,6 +3,9 @@ import QRCode from "qrcode";
 import { prisma } from "@/lib/prisma";
 import { BRAND } from "@/lib/brand";
 
+// Données en temps réel : on rend la page à chaque visite (pas de pré-génération).
+export const dynamic = "force-dynamic";
+
 // Dashboard du GÉRANT du restaurant : vue d'ensemble + stats.
 // Pour le MVP on prend le premier restaurant (plus tard : celui de l'utilisateur connecté).
 export default async function DashboardPage() {

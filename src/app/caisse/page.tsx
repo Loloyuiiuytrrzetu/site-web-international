@@ -2,6 +2,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { StampButton } from "@/components/StampButton";
 
+// Données en temps réel : on rend la page à chaque visite (pas de pré-génération).
+export const dynamic = "force-dynamic";
+
 // Espace CAISSE : utilisé par le serveur / caissier du restaurant.
 // Il voit la liste des cartes clients et ajoute un tampon en un clic.
 // (Plus tard : scan direct du QR code du client.)
