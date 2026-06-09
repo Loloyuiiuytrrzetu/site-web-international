@@ -1,0 +1,94 @@
+// Schéma de la base de données — plateforme de cartes de fidélité digitales.
+// Architecture multi-tenant : un seul logiciel, plusieurs restaurants isolés.
+//
+// Pour le MVP on utilise SQLite (zéro configuration, un simple fichier).
+// Pour passer en production il suffira de changer `provider` en "postgresql".
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Un restaurant client de la plateforme (un "tenant").
+model Restaurant {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique // identifiant lisible dans les URLs, ex: "chez-mario"
+  logoUrl   String?
+  color     String   @default("#6e1023") // couleur de marque (bordeaux par défaut)
+  // Statut de l'abonnement vendu au resto
+  plan      String   @default("trial") // trial | starter | pro | multi
+  createdAt DateTime @default(now())
+
+  programs  LoyaltyProgram[]
+  customers Customer[]
+}
+
+/// Le programme de fidélité d'un resto : "X tampons = 1 récompense".
+model LoyaltyProgram {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  name         String   // ex: "Carte café"
+  stampsGoal   Int      @default(10) // nombre de tampons pour gagner
+  rewardLabel  String   @default("1 produit offert") // ce que le client gagne
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  cards        StampCard[]
+}
+
+/// Un client final d'un restaurant.
+model Customer {
+  id           String   @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  name         String?
+  phone        String?
+  email        String?
+  createdAt    DateTime @default(now())
+
+  cards        StampCard[]
+}
+
+/// La carte de fidélité concrète d'un client (ce qui finira dans le Wallet).
+model StampCard {
+  id          String   @id @default(cuid())
+  programId   String
+  program     LoyaltyProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  // Jeton public unique mis dans le QR code et l'URL de la carte.
+  // On ne met jamais l'id interne dans une URL publique.
+  publicToken String   @unique @default(cuid())
+
+  stampsCount Int      @default(0) // tampons sur le cycle en cours
+  createdAt   DateTime @default(now())
+
+  stamps      Stamp[]
+  redemptions RewardRedemption[]
+}
+
+/// Un tampon ajouté (chaque passage du client).
+model Stamp {
+  id          String   @id @default(cuid())
+  cardId      String
+  card        StampCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+/// Une récompense récupérée par le client (carte complète -> remise à zéro).
+model RewardRedemption {
+  id          String   @id @default(cuid())
+  cardId      String
+  card        StampCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  label       String
+  createdAt   DateTime @default(now())
+}
