@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSessionBusiness } from "@/lib/auth";
-import { sendToBusiness } from "@/lib/push";
+import { announceToBusiness } from "@/lib/wallet-notify";
 
 // Campagnes de notification du commerçant.
 // trigger :
@@ -38,8 +38,8 @@ export async function createCampaign(
   if (trigger === "now") {
     status = "sent";
     sentAt = new Date();
-    // Envoi immédiat aux abonnés du commerce.
-    recipients = await sendToBusiness(business.id, { title, body: message });
+    // Diffusion immédiate sur les cartes Wallet du commerce.
+    recipients = await announceToBusiness(business.id, message);
   } else if (trigger === "scheduled") {
     const d = scheduledRaw ? new Date(scheduledRaw) : null;
     if (!d || isNaN(d.getTime())) {

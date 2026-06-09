@@ -9,13 +9,15 @@ export const dynamic = "force-dynamic";
 export default async function CampagnesPage() {
   const business = await requireBusiness();
 
-  const [campaigns, subscriberCount] = await Promise.all([
+  const [campaigns, walletCount] = await Promise.all([
     prisma.campaign.findMany({
       where: { businessId: business.id },
       orderBy: { createdAt: "desc" },
       take: 50,
     }),
-    prisma.pushSubscription.count({ where: { customer: { businessId: business.id } } }),
+    prisma.passRegistration.count({
+      where: { card: { program: { businessId: business.id } } },
+    }),
   ]);
 
   return (
@@ -32,11 +34,12 @@ export default async function CampagnesPage() {
         className="mb-5 animate-fade-up rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm"
         style={{ "--delay": "60ms" } as React.CSSProperties}
       >
-        🔔 <strong>{subscriberCount}</strong> client{subscriberCount > 1 ? "s" : ""} abonné
-        {subscriberCount > 1 ? "s" : ""} aux notifications.{" "}
-        {subscriberCount === 0 && (
+        🎫 <strong>{walletCount}</strong> carte{walletCount > 1 ? "s" : ""} ajoutée
+        {walletCount > 1 ? "s" : ""} au Wallet (reçoivent les notifications).{" "}
+        {walletCount === 0 && (
           <span className="text-neutral-500">
-            Vos clients activent les notifications depuis leur carte de fidélité.
+            Vos clients ajoutent leur carte à Apple Wallet — ensuite ils sont
+            notifiés automatiquement, sans rien activer.
           </span>
         )}
       </div>

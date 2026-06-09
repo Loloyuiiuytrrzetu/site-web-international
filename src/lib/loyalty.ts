@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSessionBusinessId } from "@/lib/auth";
 import { customerName } from "@/lib/format";
+import { notifyCardUpdated } from "@/lib/wallet-notify";
 
 // Résultat renvoyé au scanner du commerçant.
 export type StampResult =
@@ -64,6 +65,8 @@ export async function addStamp(publicToken: string): Promise<StampResult> {
         data: { stampsCount: 0 },
       }),
     ]);
+    // Met à jour la passe Apple Wallet du client (+ notification iPhone).
+    await notifyCardUpdated(card.id);
     revalidatePath(`/c/${publicToken}`);
     revalidatePath("/dashboard");
     return {
@@ -84,6 +87,8 @@ export async function addStamp(publicToken: string): Promise<StampResult> {
       data: { stampsCount: next },
     }),
   ]);
+  // Met à jour la passe Apple Wallet du client (+ notification iPhone).
+  await notifyCardUpdated(card.id);
   revalidatePath(`/c/${publicToken}`);
   revalidatePath("/dashboard");
   return {

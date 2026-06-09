@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { sendToBusiness } from "@/lib/push";
+import { announceToBusiness } from "@/lib/wallet-notify";
 
 // Tâche planifiée : envoie les campagnes dues.
 // - "scheduled" : campagnes programmées dont l'heure est passée.
@@ -30,7 +30,7 @@ async function dispatch() {
     where: { trigger: "scheduled", status: "scheduled", scheduledAt: { lte: now } },
   });
   for (const c of due) {
-    const n = await sendToBusiness(c.businessId, { title: c.title, body: c.message });
+    const n = await announceToBusiness(c.businessId, c.message);
     await prisma.campaign.update({
       where: { id: c.id },
       data: { status: "sent", sentAt: now, recipients: n },
@@ -44,11 +44,7 @@ async function dispatch() {
   });
   for (const c of birthdays) {
     if (c.sentAt && isSameDay(c.sentAt, now)) continue; // déjà envoyée aujourd'hui
-    const n = await sendToBusiness(
-      c.businessId,
-      { title: c.title, body: c.message },
-      { birthdayOnly: true },
-    );
+    const n = await announceToBusiness(c.businessId, c.message, { birthdayOnly: true });
     await prisma.campaign.update({
       where: { id: c.id },
       data: { sentAt: now, recipients: n },

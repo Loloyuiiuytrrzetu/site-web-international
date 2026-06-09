@@ -5,7 +5,7 @@ import { StampGrid } from "@/components/StampGrid";
 import { customerName } from "@/lib/format";
 import { baseUrl } from "@/lib/url";
 import { AutoRefresh } from "@/components/AutoRefresh";
-import { PushToggle } from "@/components/PushToggle";
+import { isAppleConfigured } from "@/lib/apple-wallet";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +41,7 @@ export default async function CustomerCardPage({
   const color = business.color;
   const remaining = program.stampsGoal - card.stampsCount;
   const rewards = program.rewards;
+  const appleReady = isAppleConfigured();
 
   // QR personnel de la carte : scanné par le commerçant pour ajouter un tampon.
   const cardQr = await QRCode.toDataURL(`${baseUrl()}/c/${card.publicToken}`, {
@@ -114,17 +115,28 @@ export default async function CustomerCardPage({
         />
       </section>
 
-      {/* Notifications push : le client est prévenu des points, récompenses et
-          promos (dont anniversaire 🎂). */}
-      <PushToggle token={card.publicToken} color={color} />
-
-      {/* Bouton Wallet (à venir) — la vue riche des récompenses est ci-dessous. */}
-      <button
-        disabled
-        className="rounded-2xl border border-dashed border-neutral-300 py-3 text-sm text-neutral-400"
-      >
-        📲 Ajouter à Apple / Google Wallet — bientôt
-      </button>
+      {/* Ajout à Apple Wallet. Une fois la carte dans le Wallet, le client
+          reçoit les notifications AUTOMATIQUEMENT (points, promos, anniversaire)
+          — sans rien activer. */}
+      {appleReady ? (
+        <a
+          href={`/api/wallet/apple/${card.publicToken}`}
+          className="btn flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-semibold text-white"
+        >
+           Ajouter à Apple Wallet
+        </a>
+      ) : (
+        <button
+          disabled
+          className="rounded-2xl border border-dashed border-neutral-300 py-3 text-sm text-neutral-400"
+        >
+           Ajouter à Apple Wallet — bientôt
+        </button>
+      )}
+      <p className="-mt-2 text-center text-xs text-neutral-500">
+        Une fois la carte dans le Wallet, les notifications arrivent toutes
+        seules 🔔
+      </p>
 
       {/* Récompenses du commerçant */}
       {rewards.length > 0 && (

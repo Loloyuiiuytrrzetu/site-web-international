@@ -103,25 +103,9 @@ model Customer {
   createdAt    DateTime  @default(now())
 
   cards         StampCard[]
-  subscriptions PushSubscription[]
 }
 
-/// Abonnement Web Push d'un client (autorisation des notifications sur son
-/// téléphone/navigateur). On envoie les campagnes à ces abonnements.
-model PushSubscription {
-  id         String   @id @default(cuid())
-  customerId String
-  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
-  endpoint   String   @unique // identifiant unique du navigateur abonné
-  p256dh     String   // clé publique de chiffrement du client
-  auth       String   // secret d'authentification du client
-  createdAt  DateTime @default(now())
-}
-
-/// Stockage clé/valeur pour la configuration de l'app (ex: clés VAPID
-/// générées automatiquement et persistées, pour ne pas dépendre d'une config
-/// manuelle des variables d'environnement).
+/// Stockage clé/valeur pour la configuration de l'app.
 model AppConfig {
   key   String @id
   value String
@@ -142,8 +126,33 @@ model StampCard {
   stampsCount Int      @default(0) // tampons sur le cycle en cours
   createdAt   DateTime @default(now())
 
+  // Apple Wallet :
+  // - walletAuthToken : jeton secret d'autorisation du service web PassKit.
+  // - walletUpdatedAt : date de dernière modification de la passe (sert au
+  //   champ `passesUpdatedSince` et au header Last-Modified du service web).
+  walletAuthToken String?
+  walletUpdatedAt DateTime @default(now())
+  // Dernier message « actualité » d'une campagne, affiché au dos de la passe.
+  // Sa modification déclenche la notification sur l'iPhone (changeMessage).
+  walletMessage   String?
+
   stamps      Stamp[]
   redemptions RewardRedemption[]
+  passRegistrations PassRegistration[]
+}
+
+/// Un appareil iPhone ayant ajouté une carte à Apple Wallet.
+/// Enregistré par le service web PassKit ; on s'en sert pour envoyer la
+/// notification (push APNs) qui demande à l'appareil de récupérer la passe à jour.
+model PassRegistration {
+  id              String   @id @default(cuid())
+  cardId          String
+  card            StampCard @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  deviceLibraryId String   // identifiant de l'appareil fourni par Apple
+  pushToken       String   // jeton APNs de l'appareil pour cette passe
+  createdAt       DateTime @default(now())
+
+  @@unique([deviceLibraryId, cardId])
 }
 
 /// Un tampon ajouté (chaque passage du client).
