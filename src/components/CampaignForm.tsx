@@ -11,6 +11,7 @@ export type CampaignItem = {
   status: string;
   scheduledAt: string | null;
   sentAt: string | null;
+  recipients: number;
 };
 
 const TRIGGERS = [
@@ -180,6 +181,11 @@ function CampaignRow({ campaign, color }: { campaign: CampaignItem; color: strin
           </div>
           <p className="mt-1 line-clamp-2 text-sm text-neutral-600">{campaign.message}</p>
           {when && <p className="mt-1 text-xs text-neutral-400">{when}</p>}
+          {(campaign.status === "sent" || campaign.recipients > 0) && (
+            <p className="mt-0.5 text-xs text-neutral-400">
+              📨 {campaign.recipients} destinataire{campaign.recipients > 1 ? "s" : ""}
+            </p>
+          )}
         </div>
         <button
           onClick={remove}

@@ -5,6 +5,7 @@ import { StampGrid } from "@/components/StampGrid";
 import { customerName } from "@/lib/format";
 import { baseUrl } from "@/lib/url";
 import { AutoRefresh } from "@/components/AutoRefresh";
+import { PushToggle } from "@/components/PushToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -112,6 +113,10 @@ export default async function CustomerCardPage({
           height={200}
         />
       </section>
+
+      {/* Notifications push : le client est prévenu des points, récompenses et
+          promos (dont anniversaire 🎂). */}
+      <PushToggle token={card.publicToken} color={color} />
 
       {/* Bouton Wallet (à venir) — la vue riche des récompenses est ci-dessous. */}
       <button

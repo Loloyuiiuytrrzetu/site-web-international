@@ -84,6 +84,7 @@ model Campaign {
   scheduledAt DateTime?               // date d'envoi si trigger = "scheduled"
   status      String   @default("draft") // draft | scheduled | active | sent
   sentAt      DateTime?
+  recipients  Int      @default(0) // nombre de destinataires lors du dernier envoi
   createdAt   DateTime @default(now())
 }
 
@@ -101,7 +102,29 @@ model Customer {
   email        String?
   createdAt    DateTime  @default(now())
 
-  cards        StampCard[]
+  cards         StampCard[]
+  subscriptions PushSubscription[]
+}
+
+/// Abonnement Web Push d'un client (autorisation des notifications sur son
+/// téléphone/navigateur). On envoie les campagnes à ces abonnements.
+model PushSubscription {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  endpoint   String   @unique // identifiant unique du navigateur abonné
+  p256dh     String   // clé publique de chiffrement du client
+  auth       String   // secret d'authentification du client
+  createdAt  DateTime @default(now())
+}
+
+/// Stockage clé/valeur pour la configuration de l'app (ex: clés VAPID
+/// générées automatiquement et persistées, pour ne pas dépendre d'une config
+/// manuelle des variables d'environnement).
+model AppConfig {
+  key   String @id
+  value String
 }
 
 /// La carte de fidélité concrète d'un client (ce qui finira dans le Wallet).

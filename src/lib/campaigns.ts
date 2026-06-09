@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSessionBusiness } from "@/lib/auth";
+import { sendToBusiness } from "@/lib/push";
 
 // Campagnes de notification du commerçant.
 // trigger :
@@ -32,10 +33,13 @@ export async function createCampaign(
   let scheduledAt: Date | null = null;
   let status = "draft";
   let sentAt: Date | null = null;
+  let recipients = 0;
 
   if (trigger === "now") {
     status = "sent";
     sentAt = new Date();
+    // Envoi immédiat aux abonnés du commerce.
+    recipients = await sendToBusiness(business.id, { title, body: message });
   } else if (trigger === "scheduled") {
     const d = scheduledRaw ? new Date(scheduledRaw) : null;
     if (!d || isNaN(d.getTime())) {
@@ -52,7 +56,7 @@ export async function createCampaign(
   }
 
   await prisma.campaign.create({
-    data: { businessId: business.id, title, message, trigger, scheduledAt, status, sentAt },
+    data: { businessId: business.id, title, message, trigger, scheduledAt, status, sentAt, recipients },
   });
 
   revalidatePath("/dashboard/campagnes");
