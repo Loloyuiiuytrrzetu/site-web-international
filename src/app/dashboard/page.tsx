@@ -1,9 +1,7 @@
 import Link from "next/link";
 import QRCode from "qrcode";
 import { prisma } from "@/lib/prisma";
-import { BRAND } from "@/lib/brand";
 import { requireBusiness } from "@/lib/auth";
-import { logout } from "@/lib/session-actions";
 import { customerName, initials } from "@/lib/format";
 import { weeklyScans } from "@/lib/stats";
 import { baseUrl } from "@/lib/url";
@@ -13,7 +11,7 @@ import { AutoRefresh } from "@/components/AutoRefresh";
 // Données en temps réel : on rend la page à chaque visite (pas de pré-génération).
 export const dynamic = "force-dynamic";
 
-// Tableau de bord du COMMERÇANT : protégé par la connexion.
+// Tableau de bord du COMMERÇANT (protégé par le layout /dashboard).
 // Vue d'ensemble, graphique des scans, clients, et QR d'inscription à afficher.
 export default async function DashboardPage() {
   const business = await requireBusiness();
@@ -50,55 +48,36 @@ export default async function DashboardPage() {
     width: 240,
   });
 
+  const stats = [
+    { label: "Scans aujourd'hui", value: todayScans },
+    { label: "Clients", value: customers.length },
+    { label: "Tampons distribués", value: totalStamps },
+    { label: "Récompenses gagnées", value: totalRewards },
+  ];
+
   return (
-    <main className="mx-auto w-full max-w-4xl flex-1 bg-white p-6">
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6">
       {/* Rafraîchissement automatique pour l'effet temps réel */}
       <AutoRefresh seconds={15} />
 
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Link href="/" className="text-sm text-neutral-400 hover:underline">
-            ← {BRAND.name}
-          </Link>
-          <h1 className="text-2xl font-bold">{business.name}</h1>
-          <p className="text-sm text-neutral-500">
-            {business.category ? `${business.category} · ` : ""}Plan {business.plan}
-            {program ? ` · ${program.name}` : ""}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/dashboard/personnaliser"
-            className="rounded-lg border border-neutral-200 px-4 py-2 text-sm font-semibold"
-          >
-            🎨 Personnaliser
-          </Link>
-          <Link
-            href="/scan"
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-white"
-            style={{ background: color }}
-          >
-            📷 Scanner
-          </Link>
-          <form action={logout}>
-            <button className="rounded-lg px-3 py-2 text-sm text-neutral-400 hover:underline">
-              Déconnexion
-            </button>
-          </form>
-        </div>
-      </header>
+      <div className="mb-6 animate-fade-up">
+        <h1 className="text-2xl font-bold sm:text-3xl">{business.name}</h1>
+        <p className="text-sm text-neutral-500">
+          {business.category ? `${business.category} · ` : ""}Plan {business.plan}
+          {program ? ` · ${program.name}` : ""}
+        </p>
+      </div>
 
       {/* Cartes de stats */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-4">
-        {[
-          { label: "Scans aujourd'hui", value: todayScans },
-          { label: "Clients", value: customers.length },
-          { label: "Tampons distribués", value: totalStamps },
-          { label: "Récompenses gagnées", value: totalRewards },
-        ].map((s) => (
-          <div key={s.label} className="rounded-2xl border border-neutral-100 p-5 shadow-sm">
+      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className="lift animate-fade-up rounded-2xl border border-neutral-200 p-5 shadow-sm"
+            style={{ "--delay": `${i * 70}ms` } as React.CSSProperties}
+          >
             <p className="text-sm text-neutral-500">{s.label}</p>
-            <p className="text-3xl font-extrabold" style={{ color }}>
+            <p className="mt-1 text-3xl font-extrabold tabular-nums" style={{ color }}>
               {s.value}
             </p>
           </div>
@@ -106,23 +85,29 @@ export default async function DashboardPage() {
       </div>
 
       {/* Graphique des scans de la semaine */}
-      <section className="mb-8 rounded-2xl border border-neutral-100 p-6 shadow-sm">
+      <section
+        className="mb-8 animate-fade-up rounded-2xl border border-neutral-200 p-6 shadow-sm"
+        style={{ "--delay": "120ms" } as React.CSSProperties}
+      >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-bold">Scans cette semaine</h2>
-          <span className="flex items-center gap-1 text-xs text-neutral-400">
-            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green-500" />
+          <span className="flex items-center gap-1.5 text-xs text-neutral-400">
+            <span className="inline-block h-2 w-2 animate-ring rounded-full bg-green-500" />
             temps réel
           </span>
         </div>
         <WeekChart data={week} color={color} />
       </section>
 
-      <div className="grid gap-8 md:grid-cols-[1fr_auto]">
+      <div className="grid gap-8 lg:grid-cols-[1fr_auto]">
         {/* Liste des clients */}
-        <section>
-          <h2 className="mb-3 font-bold">Vos clients</h2>
+        <section className="animate-fade-up" style={{ "--delay": "160ms" } as React.CSSProperties}>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-bold">Vos clients</h2>
+            <span className="text-xs text-neutral-400">{customers.length} au total</span>
+          </div>
           {customers.length === 0 && (
-            <p className="text-sm text-neutral-500">
+            <p className="rounded-xl border border-dashed border-neutral-200 p-4 text-sm text-neutral-500">
               Aucun client pour l'instant. Affichez votre QR d'inscription ! →
             </p>
           )}
@@ -132,7 +117,7 @@ export default async function DashboardPage() {
               return (
                 <li
                   key={c.id}
-                  className="flex items-center justify-between rounded-xl border border-neutral-100 p-3 text-sm"
+                  className="flex items-center justify-between rounded-xl border border-neutral-200 p-3 text-sm transition-colors hover:bg-neutral-50"
                 >
                   <span className="flex items-center gap-3">
                     <span
@@ -146,7 +131,7 @@ export default async function DashboardPage() {
                   {card && (
                     <Link
                       href={`/c/${card.publicToken}`}
-                      className="font-medium"
+                      className="font-semibold tabular-nums"
                       style={{ color }}
                     >
                       {card.stampsCount}/{program?.stampsGoal ?? 10} →
@@ -159,9 +144,12 @@ export default async function DashboardPage() {
         </section>
 
         {/* QR d'inscription à afficher pour les nouveaux clients */}
-        <section className="text-center">
+        <section
+          className="animate-fade-up rounded-2xl border border-neutral-200 p-5 text-center shadow-sm lg:w-72"
+          style={{ "--delay": "200ms" } as React.CSSProperties}
+        >
           <h2 className="mb-1 font-bold">QR d'inscription</h2>
-          <p className="mb-3 max-w-[240px] text-xs text-neutral-500">
+          <p className="mb-3 text-xs text-neutral-500">
             Affichez-le en boutique : le client le scanne pour s'inscrire et
             recevoir sa carte.
           </p>
@@ -173,7 +161,10 @@ export default async function DashboardPage() {
             width={240}
             height={240}
           />
-          <Link href={`/j/${business.slug}`} className="mt-2 block text-xs text-neutral-400 underline">
+          <Link
+            href={`/j/${business.slug}`}
+            className="mt-2 block text-xs text-neutral-400 underline"
+          >
             ouvrir la page d'inscription
           </Link>
         </section>

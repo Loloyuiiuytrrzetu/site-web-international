@@ -31,6 +31,7 @@ model Business {
 
   programs  LoyaltyProgram[]
   customers Customer[]
+  campaigns Campaign[]
 }
 
 /// Le programme de fidélité d'un commerce : "X tampons = 1 récompense".
@@ -40,12 +41,50 @@ model LoyaltyProgram {
   business     Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   name         String   // ex: "Carte café"
+  // Objectif principal de la carte (max 15 tampons côté interface).
   stampsGoal   Int      @default(10) // nombre de tampons pour gagner
-  rewardLabel  String   @default("1 produit offert") // ce que le client gagne
+  rewardLabel  String   @default("1 produit offert") // récompense principale (objectif atteint)
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
 
   cards        StampCard[]
+  rewards      Reward[]
+}
+
+/// Une récompense proposée par le commerçant dans son programme.
+/// Le client la débloque à partir d'un certain nombre de tampons.
+/// Peut être un cadeau ("gift") ou un coupon de réduction ("coupon").
+model Reward {
+  id            String   @id @default(cuid())
+  programId     String
+  program       LoyaltyProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  title         String   // ex: "1 café offert"
+  description   String?  // détail optionnel
+  type          String   @default("gift") // "gift" (cadeau) | "coupon" (réduction)
+  pointsRequired Int     @default(10) // tampons nécessaires pour débloquer
+  imageUrl      String?  // photo optionnelle (data URL ou URL externe)
+  couponCode    String?  // code de réduction (pour type "coupon")
+  active        Boolean  @default(true)
+  position      Int      @default(0) // ordre d'affichage
+  createdAt     DateTime @default(now())
+}
+
+/// Une campagne de notification push créée par le commerçant.
+/// trigger = "now" (envoi immédiat) | "scheduled" (date programmée)
+///           | "birthday" (automatique le jour d'anniversaire du client 🎂)
+model Campaign {
+  id          String   @id @default(cuid())
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  title       String
+  message     String
+  trigger     String   @default("now") // now | scheduled | birthday
+  scheduledAt DateTime?               // date d'envoi si trigger = "scheduled"
+  status      String   @default("draft") // draft | scheduled | active | sent
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
 }
 
 /// Un client final d'un commerce.

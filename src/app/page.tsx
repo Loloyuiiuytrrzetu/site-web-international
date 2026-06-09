@@ -19,7 +19,7 @@ export default function Home() {
           </Link>
           <Link
             href="/login"
-            className="rounded-lg px-4 py-2 font-semibold text-white"
+            className="btn rounded-lg px-4 py-2 font-semibold text-white"
             style={{ background: BRAND.bordeaux }}
           >
             Connexion
@@ -29,7 +29,7 @@ export default function Home() {
 
       {/* Hero */}
       <section className="mx-auto grid w-full max-w-5xl flex-1 items-center gap-10 p-6 md:grid-cols-2">
-        <div>
+        <div className="animate-fade-up">
           <span
             className="inline-block rounded-full px-3 py-1 text-xs font-semibold"
             style={{ background: "#f7e9ec", color: BRAND.bordeaux }}
@@ -49,14 +49,14 @@ export default function Home() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/login"
-              className="rounded-xl px-6 py-3 font-semibold text-white shadow-sm"
+              className="btn rounded-xl px-6 py-3 font-semibold text-white shadow-sm"
               style={{ background: BRAND.bordeaux }}
             >
               Essayer gratuitement
             </Link>
             <Link
               href="/login"
-              className="rounded-xl border border-neutral-200 px-6 py-3 font-semibold"
+              className="btn rounded-xl border border-neutral-300 px-6 py-3 font-semibold"
             >
               Espace pro
             </Link>
@@ -66,7 +66,7 @@ export default function Home() {
         {/* Aperçu d'une carte */}
         <div className="flex justify-center">
           <div
-            className="w-72 rounded-3xl p-6 text-white shadow-2xl"
+            className="shimmer animate-float w-72 overflow-hidden rounded-3xl p-6 text-white shadow-2xl"
             style={{
               background: `linear-gradient(160deg, ${BRAND.bordeauxLight}, ${BRAND.bordeauxDark})`,
             }}
@@ -113,7 +113,7 @@ export default function Home() {
         ].map((f) => (
           <div
             key={f.t}
-            className="rounded-2xl border border-neutral-100 p-5 shadow-sm"
+            className="lift rounded-2xl border border-neutral-200 p-5 shadow-sm"
           >
             <h3 className="font-bold" style={{ color: BRAND.bordeaux }}>
               {f.t}
@@ -153,9 +153,9 @@ export default function Home() {
           ].map((plan) => (
             <div
               key={plan.n}
-              className="rounded-2xl border p-6"
+              className="lift rounded-2xl border p-6"
               style={{
-                borderColor: plan.hot ? BRAND.bordeaux : "#eee",
+                borderColor: plan.hot ? BRAND.bordeaux : "#e5e5e5",
                 boxShadow: plan.hot
                   ? `0 10px 30px -10px ${BRAND.bordeaux}55`
                   : undefined,

@@ -40,7 +40,7 @@ export default async function CaissePage() {
           return (
             <li
               key={card.id}
-              className="flex items-center justify-between rounded-2xl border border-black/5 bg-white p-4 shadow-sm dark:bg-neutral-900"
+              className="lift flex items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm"
             >
               <div>
                 <p className="font-medium">{customerName(card.customer)}</p>

@@ -89,10 +89,11 @@ export function CustomizeForm({ initial }: { initial: Initial }) {
             name="stampsGoal"
             type="range"
             min={2}
-            max={20}
+            max={15}
             value={stampsGoal}
             onChange={(e) => setStampsGoal(Number(e.target.value))}
             className="w-full"
+            style={{ accentColor: color }}
           />
         </Field>
 
@@ -102,7 +103,7 @@ export function CustomizeForm({ initial }: { initial: Initial }) {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-xl px-6 py-3 font-semibold text-white disabled:opacity-50"
+          className="btn rounded-xl px-6 py-3 font-semibold text-white disabled:opacity-50"
           style={{ background: color }}
         >
           {pending ? "Enregistrement…" : "Enregistrer"}
@@ -110,10 +111,10 @@ export function CustomizeForm({ initial }: { initial: Initial }) {
       </form>
 
       {/* Aperçu en direct */}
-      <div>
+      <div className="lg:sticky lg:top-24 lg:self-start">
         <p className="mb-2 text-sm font-bold text-neutral-500">Aperçu</p>
         <div
-          className="w-72 rounded-3xl p-6 text-white shadow-2xl"
+          className="shimmer w-72 overflow-hidden rounded-3xl p-6 text-white shadow-2xl transition-colors duration-300"
           style={{ background: color }}
         >
           <p className="text-xs opacity-70">{category || "Carte de fidélité"}</p>

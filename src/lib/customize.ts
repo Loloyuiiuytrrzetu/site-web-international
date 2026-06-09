@@ -27,8 +27,8 @@ export async function updateBranding(
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) {
     return { error: "Couleur invalide." };
   }
-  if (!Number.isFinite(stampsGoal) || stampsGoal < 2 || stampsGoal > 20) {
-    return { error: "L'objectif doit être entre 2 et 20 tampons." };
+  if (!Number.isFinite(stampsGoal) || stampsGoal < 2 || stampsGoal > 15) {
+    return { error: "L'objectif doit être entre 2 et 15 tampons." };
   }
 
   await prisma.business.update({
@@ -53,6 +53,6 @@ export async function updateBranding(
   }
 
   revalidatePath("/dashboard");
-  revalidatePath("/dashboard/personnaliser");
+  revalidatePath("/dashboard/programme");
   return { ok: true };
 }

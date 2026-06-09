@@ -51,6 +51,48 @@ async function main() {
     },
   });
 
+  // Quelques récompenses de démo (cadeaux + coupon) sur le programme.
+  await prisma.reward.createMany({
+    data: [
+      {
+        programId: business.programs[0].id,
+        title: "1 café offert",
+        description: "Le grand classique de la maison.",
+        type: "gift",
+        pointsRequired: 10,
+        position: 0,
+      },
+      {
+        programId: business.programs[0].id,
+        title: "1 pâtisserie offerte",
+        description: "Au choix parmi les pâtisseries du jour.",
+        type: "gift",
+        pointsRequired: 5,
+        position: 1,
+      },
+      {
+        programId: business.programs[0].id,
+        title: "-20% sur l'addition",
+        description: "Valable sur place, hors boissons.",
+        type: "coupon",
+        couponCode: "MERCI20",
+        pointsRequired: 3,
+        position: 2,
+      },
+    ],
+  });
+
+  // Une campagne automatique d'anniversaire (démo).
+  await prisma.campaign.create({
+    data: {
+      businessId: business.id,
+      title: "Joyeux anniversaire 🎂",
+      message: "Pour votre anniversaire, profitez d'un dessert offert chez nous !",
+      trigger: "birthday",
+      status: "active",
+    },
+  });
+
   console.log("✅ Données de démo créées.");
   console.log(`   Commerce : ${business.name} (connexion : chez-mario / walletiz)`);
   console.log(`   Carte démo : /c/${card.publicToken}`);
