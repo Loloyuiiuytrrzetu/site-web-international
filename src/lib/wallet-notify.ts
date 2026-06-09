@@ -1,29 +1,48 @@
-// Déclenchement des notifications Apple Wallet.
+// Orchestration des notifications Wallet — Apple ET Google.
 //
-// Principe : on modifie la passe (compteur de tampons, ou message d'actualité),
-// on note la date de mise à jour, puis on envoie un push APNs aux appareils
-// enregistrés. L'iPhone récupère alors la passe à jour et affiche la notif.
+// Chaque commerce peut avoir des clients iPhone (Apple Wallet) et Android
+// (Google Wallet). Ces fonctions déclenchent la mise à jour / la notification
+// sur les deux plateformes. Chaque plateforme est ignorée si non configurée.
 
 import { prisma } from "@/lib/prisma";
 import { sendPassPush } from "@/lib/apns";
+import { googleUpdateCard, googleAnnounce } from "@/lib/google-wallet";
 
-/** Met à jour une carte (après un tampon) et notifie ses appareils. */
+/** Met à jour la carte (après un tampon) et notifie ses appareils (Apple + Google). */
 export async function notifyCardUpdated(cardId: string): Promise<void> {
-  await prisma.stampCard.update({
+  const card = await prisma.stampCard.update({
     where: { id: cardId },
     data: { walletUpdatedAt: new Date() },
+    select: { publicToken: true },
   });
+
+  // Apple : push APNs vers les appareils enregistrés (l'iPhone récupère la passe).
   const regs = await prisma.passRegistration.findMany({ where: { cardId } });
   if (regs.length) await sendPassPush(regs.map((r) => r.pushToken));
+
+  // Google : met à jour l'objet (la carte Android se met à jour).
+  await googleUpdateCard(card.publicToken);
 }
 
 /**
- * Diffuse un message (campagne) sur les passes d'un commerce.
- * - `birthdayOnly` : ne cible que les clients dont c'est l'anniversaire.
- * Met le message sur chaque carte ciblée (déclenche la notif), puis push APNs.
- * Renvoie le nombre d'appareils notifiés.
+ * Diffuse un message (campagne) sur les cartes Wallet d'un commerce, sur les
+ * DEUX plateformes. `birthdayOnly` ne cible que les anniversaires du jour.
+ * Renvoie le nombre total de cartes/appareils notifiés (Apple + Google).
  */
-export async function announceToBusiness(
+export async function announceAll(
+  businessId: string,
+  title: string,
+  message: string,
+  opts?: { birthdayOnly?: boolean },
+): Promise<number> {
+  const apple = await announceApple(businessId, message, opts);
+  const google = await googleAnnounce(businessId, title, message, opts);
+  return apple + google;
+}
+
+// Partie Apple : on met le message sur chaque carte ciblée (déclenche la notif
+// via changeMessage) puis on pousse APNs.
+async function announceApple(
   businessId: string,
   message: string,
   opts?: { birthdayOnly?: boolean },
@@ -45,10 +64,9 @@ export async function announceToBusiness(
   }
   if (targets.length === 0) return 0;
 
-  const now = new Date();
   await prisma.stampCard.updateMany({
     where: { id: { in: targets.map((c) => c.id) } },
-    data: { walletMessage: message, walletUpdatedAt: now },
+    data: { walletMessage: message, walletUpdatedAt: new Date() },
   });
 
   const tokens = targets.flatMap((c) => c.passRegistrations.map((r) => r.pushToken));

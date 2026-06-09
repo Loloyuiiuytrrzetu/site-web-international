@@ -6,6 +6,7 @@ import { customerName } from "@/lib/format";
 import { baseUrl } from "@/lib/url";
 import { AutoRefresh } from "@/components/AutoRefresh";
 import { isAppleConfigured } from "@/lib/apple-wallet";
+import { isGoogleConfigured } from "@/lib/google-wallet";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function CustomerCardPage({
   const remaining = program.stampsGoal - card.stampsCount;
   const rewards = program.rewards;
   const appleReady = isAppleConfigured();
+  const googleReady = isGoogleConfigured();
 
   // QR personnel de la carte : scanné par le commerçant pour ajouter un tampon.
   const cardQr = await QRCode.toDataURL(`${baseUrl()}/c/${card.publicToken}`, {
@@ -115,22 +117,31 @@ export default async function CustomerCardPage({
         />
       </section>
 
-      {/* Ajout à Apple Wallet. Une fois la carte dans le Wallet, le client
-          reçoit les notifications AUTOMATIQUEMENT (points, promos, anniversaire)
-          — sans rien activer. */}
-      {appleReady ? (
+      {/* Ajout au Wallet. Une fois la carte dans le Wallet, le client reçoit
+          les notifications AUTOMATIQUEMENT (points, promos, anniversaire) —
+          sans rien activer. */}
+      {appleReady && (
         <a
           href={`/api/wallet/apple/${card.publicToken}`}
           className="btn flex items-center justify-center gap-2 rounded-2xl bg-black py-3.5 text-sm font-semibold text-white"
         >
            Ajouter à Apple Wallet
         </a>
-      ) : (
+      )}
+      {googleReady && (
+        <a
+          href={`/api/wallet/google/${card.publicToken}`}
+          className="btn flex items-center justify-center gap-2 rounded-2xl border border-neutral-300 bg-white py-3.5 text-sm font-semibold text-neutral-900"
+        >
+          🤖 Ajouter à Google Wallet
+        </a>
+      )}
+      {!appleReady && !googleReady && (
         <button
           disabled
           className="rounded-2xl border border-dashed border-neutral-300 py-3 text-sm text-neutral-400"
         >
-           Ajouter à Apple Wallet — bientôt
+          📲 Ajouter au Wallet — bientôt
         </button>
       )}
       <p className="-mt-2 text-center text-xs text-neutral-500">
