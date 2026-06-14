@@ -5,7 +5,6 @@ import {
   Calendar,
   Eye,
   TrendingUp,
-  Users,
 } from "lucide-react";
 import { useCurrentRestaurant } from "@/lib/store";
 import {
@@ -63,7 +62,7 @@ export default function StatsPage() {
         <div className="rounded-2xl border border-neutral-200 bg-white p-10 text-center text-sm text-neutral-500">
           Chargement des statistiques...
         </div>
-      ) : !stats || stats.views30d === 0 ? (
+      ) : !stats || stats.viewsMonth === 0 ? (
         <Card>
           <div className="py-10 text-center">
             <p className="text-6xl">📊</p>
@@ -78,25 +77,20 @@ export default function StatsPage() {
         </Card>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Kpi
               icon={Eye}
-              label="Vues 7 jours"
-              value={stats.views7d}
+              label="Cette semaine"
+              value={stats.viewsWeek}
+              hint="Depuis lundi"
               tone="violet"
             />
             <Kpi
               icon={Calendar}
-              label="Vues 30 jours"
-              value={stats.views30d}
+              label="Ce mois-ci"
+              value={stats.viewsMonth}
+              hint="Depuis le 1er"
               tone="emerald"
-            />
-            <Kpi
-              icon={Users}
-              label="Visiteurs uniques"
-              value={stats.uniqueSessions}
-              hint="Basé sur les sessions"
-              tone="amber"
             />
             <Kpi
               icon={TrendingUp}
@@ -106,11 +100,42 @@ export default function StatsPage() {
                   ? formatRelative(stats.lastViewAt)
                   : "—"
               }
-              tone="violet"
+              tone="amber"
             />
           </div>
 
           <div className="mt-6">
+            <Card
+              title="Historique mensuel (12 derniers mois)"
+              description="Évolution du nombre de scans mois par mois."
+            >
+              <div className="flex items-end gap-1 sm:gap-2">
+                {stats.monthly.map((m) => {
+                  const max = Math.max(1, ...stats.monthly.map((x) => x.count));
+                  const h = Math.max(4, Math.round((m.count / max) * 140));
+                  return (
+                    <div
+                      key={m.key}
+                      className="flex flex-1 flex-col items-center gap-1"
+                    >
+                      <span className="text-[10px] font-semibold text-neutral-900 sm:text-xs">
+                        {m.count}
+                      </span>
+                      <div
+                        className="w-full rounded-t-md bg-brand-600"
+                        style={{ height: `${h}px`, minHeight: 4 }}
+                      />
+                      <span className="text-[9px] uppercase tracking-wide text-neutral-500 sm:text-[10px]">
+                        {m.label.replace(".", "")}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+          </div>
+
+          <div className="mt-4">
             <Card
               title="Vues sur les 7 derniers jours"
               description="Nombre de scans et consultations par jour."
@@ -143,7 +168,7 @@ export default function StatsPage() {
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <Card
-              title="Top 5 plats consultés"
+              title="Top 5 plats consultés ce mois-ci"
               description="Les plats qui intéressent le plus vos clients."
             >
               {stats.topDishes.length === 0 ? (
@@ -179,7 +204,7 @@ export default function StatsPage() {
             </Card>
 
             <Card
-              title="Langues utilisées"
+              title="Langues utilisées ce mois-ci"
               description="Quelles langues vos clients préfèrent."
             >
               {stats.locales.length === 0 ? (
@@ -218,8 +243,8 @@ export default function StatsPage() {
       )}
 
       <p className="mt-5 text-xs text-neutral-500">
-        💡 Les statistiques couvrent les 30 derniers jours. Plus vos clients
-        scannent, plus vos données seront riches.
+        💡 « Cette semaine » se réinitialise chaque lundi. « Ce mois-ci » se
+        réinitialise le 1er de chaque mois.
       </p>
     </div>
   );
