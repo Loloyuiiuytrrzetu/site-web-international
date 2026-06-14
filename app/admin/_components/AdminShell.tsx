@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  BarChart3,
   ChevronsUpDown,
   Eye,
   LayoutDashboard,
@@ -28,6 +29,7 @@ const nav = [
   { href: "/admin/restaurant", label: "Mon restaurant", icon: Store },
   { href: "/admin/theme", label: "Apparence", icon: Palette },
   { href: "/admin/menu", label: "Menu & plats", icon: UtensilsCrossed },
+  { href: "/admin/stats", label: "Statistiques", icon: BarChart3 },
   { href: "/admin/qr", label: "QR code", icon: QrCode },
 ];
 

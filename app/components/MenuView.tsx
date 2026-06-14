@@ -5,6 +5,7 @@ import Script from "next/script";
 import { ArrowLeft, Check, ChevronDown, Globe } from "lucide-react";
 import type { Category, Dish, Locale, Restaurant } from "@/lib/types";
 import { t, UI_LABELS } from "@/lib/i18n";
+import { trackDishView, trackMenuView } from "@/lib/track";
 import { CategoryCard } from "./CategoryCard";
 import { DishCard } from "./DishCard";
 import { DishDetailSheet } from "./DishDetailSheet";
@@ -31,6 +32,16 @@ export function MenuView({ restaurant }: Props) {
   const [activeDish, setActiveDish] = useState<Dish | null>(null);
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [orderOpen, setOrderOpen] = useState(false);
+
+  useEffect(() => {
+    void trackMenuView(restaurant.id, locale);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurant.id]);
+
+  useEffect(() => {
+    if (activeDish) void trackDishView(restaurant.id, activeDish.id, locale);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeDish?.id]);
 
   const updateQty = (dishId: string, qty: number) => {
     setOrder((prev) =>
