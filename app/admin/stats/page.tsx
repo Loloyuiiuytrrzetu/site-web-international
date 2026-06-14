@@ -25,10 +25,26 @@ const LOCALE_LABEL: Record<string, string> = {
   "?": "Inconnue",
 };
 
+const MONTH_FULL: Record<string, string> = {
+  janv: "janvier",
+  févr: "février",
+  mars: "mars",
+  avr: "avril",
+  mai: "mai",
+  juin: "juin",
+  juil: "juillet",
+  août: "août",
+  sept: "septembre",
+  oct: "octobre",
+  nov: "novembre",
+  déc: "décembre",
+};
+
 export default function StatsPage() {
   const restaurant = useCurrentRestaurant();
   const [stats, setStats] = useState<RestaurantStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>("");
 
   const dishesById = useMemo(() => {
     const map = new Map<string, string>();
@@ -45,11 +61,26 @@ export default function StatsPage() {
     if (!restaurant) return;
     setLoading(true);
     fetchRestaurantStats(restaurant.id, dishesById)
-      .then(setStats)
+      .then((s) => {
+        setStats(s);
+        setSelectedMonthKey(s.currentMonthKey);
+      })
       .finally(() => setLoading(false));
   }, [restaurant, dishesById]);
 
   if (!restaurant) return null;
+
+  const currentYear = new Date().getFullYear();
+
+  const selectedMonth = stats?.monthly.find(
+    (m) => m.key === selectedMonthKey
+  );
+  const selectedLabel = selectedMonth
+    ? `${MONTH_FULL[selectedMonth.label] ?? selectedMonth.label} ${currentYear}`
+    : "";
+
+  const topDishes = stats?.topDishesByMonth[selectedMonthKey] ?? [];
+  const locales = stats?.localesByMonth[selectedMonthKey] ?? [];
 
   return (
     <div className="mx-auto max-w-5xl p-5 lg:p-8">
@@ -106,29 +137,44 @@ export default function StatsPage() {
 
           <div className="mt-6">
             <Card
-              title="Historique mensuel (12 derniers mois)"
-              description="Évolution du nombre de scans mois par mois."
+              title={`Historique mensuel ${currentYear}`}
+              description="Cliquez sur un mois pour voir les plats et langues consultés."
             >
               <div className="flex items-end gap-1 sm:gap-2">
                 {stats.monthly.map((m) => {
                   const max = Math.max(1, ...stats.monthly.map((x) => x.count));
                   const h = Math.max(4, Math.round((m.count / max) * 140));
+                  const isSelected = m.key === selectedMonthKey;
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={m.key}
-                      className="flex flex-1 flex-col items-center gap-1"
+                      onClick={() => setSelectedMonthKey(m.key)}
+                      className="group flex flex-1 flex-col items-center gap-1 rounded-md px-0.5 py-1 transition hover:bg-neutral-50"
                     >
-                      <span className="text-[10px] font-semibold text-neutral-900 sm:text-xs">
+                      <span
+                        className={`text-[10px] font-semibold sm:text-xs ${
+                          isSelected ? "text-brand-700" : "text-neutral-900"
+                        }`}
+                      >
                         {m.count}
                       </span>
                       <div
-                        className="w-full rounded-t-md bg-brand-600"
+                        className={`w-full rounded-t-md transition ${
+                          isSelected ? "bg-brand-700" : "bg-brand-600 opacity-70 group-hover:opacity-100"
+                        }`}
                         style={{ height: `${h}px`, minHeight: 4 }}
                       />
-                      <span className="text-[9px] uppercase tracking-wide text-neutral-500 sm:text-[10px]">
-                        {m.label.replace(".", "")}
+                      <span
+                        className={`text-[9px] uppercase tracking-wide sm:text-[10px] ${
+                          isSelected
+                            ? "font-bold text-brand-700"
+                            : "text-neutral-500"
+                        }`}
+                      >
+                        {m.label}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -168,17 +214,17 @@ export default function StatsPage() {
 
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
             <Card
-              title="Top 5 plats consultés ce mois-ci"
-              description="Les plats qui intéressent le plus vos clients."
+              title={`Top 5 plats — ${selectedLabel}`}
+              description="Les plats qui intéressent le plus vos clients ce mois-là."
             >
-              {stats.topDishes.length === 0 ? (
+              {topDishes.length === 0 ? (
                 <p className="py-4 text-center text-sm text-neutral-500">
-                  Aucun plat consulté pour le moment.
+                  Aucun plat consulté pour ce mois.
                 </p>
               ) : (
                 <ul className="flex flex-col gap-2.5">
-                  {stats.topDishes.map((d, i) => {
-                    const max = stats.topDishes[0]?.count || 1;
+                  {topDishes.map((d, i) => {
+                    const max = topDishes[0]?.count || 1;
                     const pct = Math.max(8, Math.round((d.count / max) * 100));
                     return (
                       <li key={d.dishId}>
@@ -204,17 +250,17 @@ export default function StatsPage() {
             </Card>
 
             <Card
-              title="Langues utilisées ce mois-ci"
-              description="Quelles langues vos clients préfèrent."
+              title={`Langues — ${selectedLabel}`}
+              description="Quelles langues vos clients préfèrent ce mois-là."
             >
-              {stats.locales.length === 0 ? (
+              {locales.length === 0 ? (
                 <p className="py-4 text-center text-sm text-neutral-500">
-                  Aucune donnée pour le moment.
+                  Aucune donnée pour ce mois.
                 </p>
               ) : (
                 <ul className="flex flex-col gap-2.5">
-                  {stats.locales.map((l) => {
-                    const max = stats.locales[0]?.count || 1;
+                  {locales.map((l) => {
+                    const max = locales[0]?.count || 1;
                     const pct = Math.max(8, Math.round((l.count / max) * 100));
                     return (
                       <li key={l.locale}>
@@ -243,8 +289,8 @@ export default function StatsPage() {
       )}
 
       <p className="mt-5 text-xs text-neutral-500">
-        💡 « Cette semaine » se réinitialise chaque lundi. « Ce mois-ci » se
-        réinitialise le 1er de chaque mois.
+        💡 « Cette semaine » se réinitialise chaque lundi. L'historique annuel
+        se réinitialise au 1er janvier de chaque année.
       </p>
     </div>
   );

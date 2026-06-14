@@ -14,8 +14,9 @@ export type RestaurantStats = {
   viewsMonth: number;
   daily: DailyView[];
   monthly: MonthlyView[];
-  topDishes: TopDish[];
-  locales: LocaleStat[];
+  topDishesByMonth: Record<string, TopDish[]>;
+  localesByMonth: Record<string, LocaleStat[]>;
+  currentMonthKey: string;
   lastViewAt: string | null;
 };
 
@@ -43,18 +44,50 @@ function startOfMonth(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), 1, 0, 0, 0, 0);
 }
 
+function monthKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function monthLabel(d: Date): string {
+  return d
+    .toLocaleDateString("fr-FR", { month: "short" })
+    .replace(".", "");
+}
+
+function buildYearMonthly(year: number): MonthlyView[] {
+  const arr: MonthlyView[] = [];
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(year, i, 1);
+    arr.push({ key: monthKey(d), label: monthLabel(d), count: 0 });
+  }
+  return arr;
+}
+
+function buildEmptyDaily(days: number): DailyView[] {
+  const now = new Date();
+  const arr: DailyView[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    arr.push({ day: isoDay(d), count: 0 });
+  }
+  return arr;
+}
+
 export async function fetchRestaurantStats(
   restaurantId: string,
   dishesById: Map<string, string>
 ): Promise<RestaurantStats> {
   const now = new Date();
-  const historyStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+  const currentYear = now.getFullYear();
+  const yearStart = new Date(currentYear, 0, 1);
+  const currentMonthKey = monthKey(now);
 
   const { data, error } = await supabase
     .from("restaurant_views")
     .select("dish_id, session_id, locale, viewed_at")
     .eq("restaurant_id", restaurantId)
-    .gte("viewed_at", historyStart.toISOString())
+    .gte("viewed_at", yearStart.toISOString())
     .order("viewed_at", { ascending: false })
     .limit(50000);
 
@@ -62,9 +95,10 @@ export async function fetchRestaurantStats(
     viewsWeek: 0,
     viewsMonth: 0,
     daily: buildEmptyDaily(7),
-    monthly: buildEmptyMonthly(12),
-    topDishes: [],
-    locales: [],
+    monthly: buildYearMonthly(currentYear),
+    topDishesByMonth: {},
+    localesByMonth: {},
+    currentMonthKey,
     lastViewAt: null,
   };
 
@@ -84,29 +118,14 @@ export async function fetchRestaurantStats(
     (r) => new Date(r.viewed_at) >= weekStart
   ).length;
 
-  const monthlyMap = new Map<string, number>();
-  const monthlyList: MonthlyView[] = [];
-  for (let i = 11; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("fr-FR", {
-      month: "short",
-      year: "2-digit",
-    });
-    monthlyMap.set(key, 0);
-    monthlyList.push({ key, label, count: 0 });
-  }
+  const monthly = buildYearMonthly(currentYear);
+  const monthlyMap = new Map(monthly.map((m) => [m.key, m] as const));
   for (const r of menuViewsOnly) {
     const d = new Date(r.viewed_at);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    if (monthlyMap.has(key)) {
-      monthlyMap.set(key, (monthlyMap.get(key) ?? 0) + 1);
-    }
+    const key = monthKey(d);
+    const entry = monthlyMap.get(key);
+    if (entry) entry.count++;
   }
-  const monthly: MonthlyView[] = monthlyList.map((m) => ({
-    ...m,
-    count: monthlyMap.get(m.key) ?? 0,
-  }));
 
   const dailyMap = new Map<string, number>();
   for (let i = 6; i >= 0; i--) {
@@ -124,65 +143,53 @@ export async function fetchRestaurantStats(
     ([day, count]) => ({ day, count })
   );
 
-  const dishCount = new Map<string, number>();
+  const dishesPerMonth = new Map<string, Map<string, number>>();
   for (const r of rows) {
-    if (r.dish_id && new Date(r.viewed_at) >= monthStart) {
-      dishCount.set(r.dish_id, (dishCount.get(r.dish_id) ?? 0) + 1);
-    }
+    if (!r.dish_id) continue;
+    const key = monthKey(new Date(r.viewed_at));
+    if (!monthlyMap.has(key)) continue;
+    const inner = dishesPerMonth.get(key) ?? new Map<string, number>();
+    inner.set(r.dish_id, (inner.get(r.dish_id) ?? 0) + 1);
+    dishesPerMonth.set(key, inner);
   }
-  const topDishes: TopDish[] = Array.from(dishCount.entries())
-    .map(([dishId, count]) => ({
-      dishId,
-      name: dishesById.get(dishId) ?? "Plat supprimé",
-      count,
-    }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+  const topDishesByMonth: Record<string, TopDish[]> = {};
+  for (const m of monthly) {
+    const inner = dishesPerMonth.get(m.key) ?? new Map<string, number>();
+    topDishesByMonth[m.key] = Array.from(inner.entries())
+      .map(([dishId, count]) => ({
+        dishId,
+        name: dishesById.get(dishId) ?? "Plat supprimé",
+        count,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }
 
-  const localeCount = new Map<string, number>();
+  const localesPerMonth = new Map<string, Map<string, number>>();
   for (const r of menuViewsOnly) {
-    if (new Date(r.viewed_at) >= monthStart) {
-      const loc = r.locale ?? "?";
-      localeCount.set(loc, (localeCount.get(loc) ?? 0) + 1);
-    }
+    const key = monthKey(new Date(r.viewed_at));
+    if (!monthlyMap.has(key)) continue;
+    const inner = localesPerMonth.get(key) ?? new Map<string, number>();
+    const loc = r.locale ?? "?";
+    inner.set(loc, (inner.get(loc) ?? 0) + 1);
+    localesPerMonth.set(key, inner);
   }
-  const locales: LocaleStat[] = Array.from(localeCount.entries())
-    .map(([locale, count]) => ({ locale, count }))
-    .sort((a, b) => b.count - a.count);
+  const localesByMonth: Record<string, LocaleStat[]> = {};
+  for (const m of monthly) {
+    const inner = localesPerMonth.get(m.key) ?? new Map<string, number>();
+    localesByMonth[m.key] = Array.from(inner.entries())
+      .map(([locale, count]) => ({ locale, count }))
+      .sort((a, b) => b.count - a.count);
+  }
 
   return {
     viewsWeek,
     viewsMonth,
     daily,
     monthly,
-    topDishes,
-    locales,
+    topDishesByMonth,
+    localesByMonth,
+    currentMonthKey,
     lastViewAt: rows[0]?.viewed_at ?? null,
   };
-}
-
-function buildEmptyMonthly(months: number): MonthlyView[] {
-  const now = new Date();
-  const arr: MonthlyView[] = [];
-  for (let i = months - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = d.toLocaleDateString("fr-FR", {
-      month: "short",
-      year: "2-digit",
-    });
-    arr.push({ key, label, count: 0 });
-  }
-  return arr;
-}
-
-function buildEmptyDaily(days: number): DailyView[] {
-  const now = new Date();
-  const arr: DailyView[] = [];
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - i);
-    arr.push({ day: isoDay(d), count: 0 });
-  }
-  return arr;
 }
