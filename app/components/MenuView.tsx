@@ -26,17 +26,34 @@ const LOCALE_LABELS: Record<Locale, string> = {
 
 type Props = { restaurant: Restaurant };
 
+const LOCALE_STORAGE_KEY = (slug: string) => `walletiz_locale_${slug}`;
+
 export function MenuView({ restaurant }: Props) {
-  const [locale, setLocale] = useState<Locale>(restaurant.defaultLocale);
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window === "undefined") return restaurant.defaultLocale;
+    try {
+      const saved = localStorage.getItem(
+        LOCALE_STORAGE_KEY(restaurant.slug)
+      ) as Locale | null;
+      if (saved && restaurant.locales.includes(saved)) return saved;
+    } catch {}
+    return restaurant.defaultLocale;
+  });
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeDish, setActiveDish] = useState<Dish | null>(null);
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [orderOpen, setOrderOpen] = useState(false);
 
+  const setLocale = (next: Locale) => {
+    setLocaleState(next);
+    try {
+      localStorage.setItem(LOCALE_STORAGE_KEY(restaurant.slug), next);
+    } catch {}
+  };
+
   useEffect(() => {
     void trackMenuView(restaurant.id, locale);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [restaurant.id]);
+  }, [restaurant.id, locale]);
 
   useEffect(() => {
     if (activeDish) void trackDishView(restaurant.id, activeDish.id, locale);
