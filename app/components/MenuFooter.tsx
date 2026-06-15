@@ -14,6 +14,8 @@ export function MenuFooter({ restaurant, locale }: Props) {
     : undefined;
   const telLink = contact.phone ? `tel:${contact.phone}` : undefined;
   const reviewLink = contact.googleReviewUrl?.trim();
+  const reviewLabel =
+    contact.googleReviewLabel?.trim() || labels.googleReview;
 
   const tiles: { key: string; node: React.ReactNode }[] = [];
   if (waLink) {
@@ -100,7 +102,7 @@ export function MenuFooter({ restaurant, locale }: Props) {
             style={{ backgroundColor: theme.accentColor }}
           >
             <Star size={18} fill="currentColor" />
-            <span>⭐ {labels.googleReview}</span>
+            <span>{reviewLabel}</span>
           </a>
         )}
       </div>

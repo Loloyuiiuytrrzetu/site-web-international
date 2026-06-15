@@ -264,6 +264,7 @@ export type RestaurantContact = {
   email?: string;
   mapsUrl?: string;
   googleReviewUrl?: string;
+  googleReviewLabel?: string;
 };
 
 export type Restaurant = {
