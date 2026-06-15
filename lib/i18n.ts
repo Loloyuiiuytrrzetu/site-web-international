@@ -21,6 +21,7 @@ export const UI_LABELS: Record<Locale, {
   whatsapp: string;
   call: string;
   map: string;
+  googleReview: string;
   noDishes: string;
   allergens: string;
   total: string;
@@ -37,6 +38,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Appeler",
     map: "Plan",
+    googleReview: "Avis Google",
     noDishes: "Aucun plat dans cette catégorie.",
     allergens: "Allergènes",
     total: "Total",
@@ -53,6 +55,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Call",
     map: "Map",
+    googleReview: "Google Review",
     noDishes: "No dishes in this category.",
     allergens: "Allergens",
     total: "Total",
@@ -69,6 +72,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "واتساب",
     call: "اتصال",
     map: "الخريطة",
+    googleReview: "تقييم Google",
     noDishes: "لا توجد أطباق في هذه الفئة.",
     allergens: "مسببات الحساسية",
     total: "المجموع",
@@ -85,6 +89,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Llamar",
     map: "Mapa",
+    googleReview: "Reseña Google",
     noDishes: "No hay platos en esta categoría.",
     allergens: "Alérgenos",
     total: "Total",
@@ -101,6 +106,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Chiama",
     map: "Mappa",
+    googleReview: "Recensione Google",
     noDishes: "Nessun piatto in questa categoria.",
     allergens: "Allergeni",
     total: "Totale",
@@ -117,6 +123,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Anrufen",
     map: "Karte",
+    googleReview: "Google-Bewertung",
     noDishes: "Keine Gerichte in dieser Kategorie.",
     allergens: "Allergene",
     total: "Gesamt",
@@ -133,6 +140,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "Ligar",
     map: "Mapa",
+    googleReview: "Avaliação Google",
     noDishes: "Nenhum prato nesta categoria.",
     allergens: "Alérgenos",
     total: "Total",
@@ -149,6 +157,7 @@ export const UI_LABELS: Record<Locale, {
     whatsapp: "WhatsApp",
     call: "致电",
     map: "地图",
+    googleReview: "Google 评价",
     noDishes: "此分类中没有菜品。",
     allergens: "过敏原",
     total: "总计",

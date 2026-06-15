@@ -262,8 +262,8 @@ export type RestaurantContact = {
   phone?: string;
   whatsapp?: string;
   email?: string;
-  address?: string;
   mapsUrl?: string;
+  googleReviewUrl?: string;
 };
 
 export type Restaurant = {

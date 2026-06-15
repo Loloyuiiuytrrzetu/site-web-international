@@ -30,7 +30,6 @@ export const demoRestaurant: Restaurant = {
     phone: "+97312345678",
     whatsapp: "+97312345678",
     email: "contact@ilpiatto.example",
-    address: "Juffair, Bahreïn",
     mapsUrl: "https://maps.google.com/?q=Juffair+Bahrain",
   },
   categories: [

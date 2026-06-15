@@ -1,6 +1,6 @@
 "use client";
 
-import { MapPin, MessageCircle, Phone } from "lucide-react";
+import { MapPin, MessageCircle, Phone, Star } from "lucide-react";
 import type { Locale, Restaurant } from "@/lib/types";
 import { UI_LABELS } from "@/lib/i18n";
 
@@ -13,6 +13,61 @@ export function MenuFooter({ restaurant, locale }: Props) {
     ? `https://wa.me/${contact.whatsapp.replace(/[^0-9]/g, "")}`
     : undefined;
   const telLink = contact.phone ? `tel:${contact.phone}` : undefined;
+  const reviewLink = contact.googleReviewUrl?.trim();
+
+  const tiles: { key: string; node: React.ReactNode }[] = [];
+  if (waLink) {
+    tiles.push({
+      key: "wa",
+      node: (
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
+        >
+          <MessageCircle size={20} style={{ color: theme.accentColor }} />
+          <span className="text-[11px] font-medium text-neutral-800">
+            {labels.whatsapp}
+          </span>
+        </a>
+      ),
+    });
+  }
+  if (telLink) {
+    tiles.push({
+      key: "tel",
+      node: (
+        <a
+          href={telLink}
+          className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
+        >
+          <Phone size={20} style={{ color: theme.accentColor }} />
+          <span className="text-[11px] font-medium text-neutral-800">
+            {labels.call}
+          </span>
+        </a>
+      ),
+    });
+  }
+  if (contact.mapsUrl) {
+    tiles.push({
+      key: "map",
+      node: (
+        <a
+          href={contact.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
+        >
+          <MapPin size={20} style={{ color: theme.accentColor }} />
+          <span className="text-[11px] font-medium text-neutral-800">
+            {labels.map}
+          </span>
+        </a>
+      ),
+    });
+  }
 
   return (
     <footer
@@ -20,53 +75,33 @@ export function MenuFooter({ restaurant, locale }: Props) {
       style={{ borderColor: `${theme.primaryColor}14` }}
     >
       <div className="mx-auto max-w-3xl px-4">
-        <div className="grid grid-cols-3 gap-2">
-          {waLink && (
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
-            >
-              <MessageCircle size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium text-neutral-800">
-                {labels.whatsapp}
-              </span>
-            </a>
-          )}
-          {telLink && (
-            <a
-              href={telLink}
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
-            >
-              <Phone size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium text-neutral-800">
-                {labels.call}
-              </span>
-            </a>
-          )}
-          {contact.mapsUrl && (
-            <a
-              href={contact.mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center justify-center gap-1 rounded-2xl bg-white py-3 shadow-sm active:scale-95"
-            >
-              <MapPin size={20} style={{ color: theme.accentColor }} />
-              <span className="text-[11px] font-medium text-neutral-800">
-                {labels.map}
-              </span>
-            </a>
-          )}
-        </div>
-
-        {contact.address && (
-          <p
-            className="mt-4 text-center text-xs opacity-60"
-            style={{ color: theme.textColor }}
+        {tiles.length > 0 && (
+          <div
+            className={`grid gap-2 ${
+              tiles.length === 1
+                ? "grid-cols-1"
+                : tiles.length === 2
+                ? "grid-cols-2"
+                : "grid-cols-3"
+            }`}
           >
-            {contact.address}
-          </p>
+            {tiles.map((t) => (
+              <div key={t.key}>{t.node}</div>
+            ))}
+          </div>
+        )}
+
+        {reviewLink && (
+          <a
+            href={reviewLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 flex items-center justify-center gap-2 rounded-2xl py-3 text-sm font-semibold text-white shadow-sm active:scale-95"
+            style={{ backgroundColor: theme.accentColor }}
+          >
+            <Star size={18} fill="currentColor" />
+            <span>⭐ {labels.googleReview}</span>
+          </a>
         )}
       </div>
     </footer>

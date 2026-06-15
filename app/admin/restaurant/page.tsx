@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
-import { Card, Field, Input, PageHeader, Textarea } from "../_components/ui";
+import { Card, Field, Input, PageHeader } from "../_components/ui";
 import { FileUploader } from "../_components/FileUploader";
 
 export default function RestaurantPage() {
@@ -88,11 +88,16 @@ export default function RestaurantPage() {
             </Field>
           </div>
           <div className="mt-4">
-            <Field label="Adresse">
-              <Textarea
-                rows={2}
-                value={restaurant.contact.address ?? ""}
-                onChange={(e) => updateContact({ address: e.target.value })}
+            <Field
+              label="Lien pour avis Google (optionnel)"
+              hint="Si renseigné, un bouton « Laisser un avis Google » apparaîtra dans votre menu client."
+            >
+              <Input
+                value={restaurant.contact.googleReviewUrl ?? ""}
+                onChange={(e) =>
+                  updateContact({ googleReviewUrl: e.target.value })
+                }
+                placeholder="https://g.page/r/.../review"
               />
             </Field>
           </div>
