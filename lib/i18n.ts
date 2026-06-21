@@ -22,6 +22,7 @@ export const UI_LABELS: Record<Locale, {
   call: string;
   map: string;
   googleReview: string;
+  orderReminder: string;
   noDishes: string;
   allergens: string;
   total: string;
@@ -39,6 +40,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Appeler",
     map: "Plan",
     googleReview: "Avis Google",
+    orderReminder:
+      "Utilisez ce simple rappel pour vous souvenir rapidement de votre commande.",
     noDishes: "Aucun plat dans cette catégorie.",
     allergens: "Allergènes",
     total: "Total",
@@ -56,6 +59,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Call",
     map: "Map",
     googleReview: "Google Review",
+    orderReminder:
+      "Use this quick reminder to easily remember your order.",
     noDishes: "No dishes in this category.",
     allergens: "Allergens",
     total: "Total",
@@ -73,6 +78,7 @@ export const UI_LABELS: Record<Locale, {
     call: "اتصال",
     map: "الخريطة",
     googleReview: "تقييم Google",
+    orderReminder: "استخدم هذا التذكير البسيط لتذكر طلبك بسهولة.",
     noDishes: "لا توجد أطباق في هذه الفئة.",
     allergens: "مسببات الحساسية",
     total: "المجموع",
@@ -90,6 +96,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Llamar",
     map: "Mapa",
     googleReview: "Reseña Google",
+    orderReminder:
+      "Use este sencillo recordatorio para recordar rápidamente su pedido.",
     noDishes: "No hay platos en esta categoría.",
     allergens: "Alérgenos",
     total: "Total",
@@ -107,6 +115,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Chiama",
     map: "Mappa",
     googleReview: "Recensione Google",
+    orderReminder:
+      "Usa questo semplice promemoria per ricordare velocemente il tuo ordine.",
     noDishes: "Nessun piatto in questa categoria.",
     allergens: "Allergeni",
     total: "Totale",
@@ -124,6 +134,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Anrufen",
     map: "Karte",
     googleReview: "Google-Bewertung",
+    orderReminder:
+      "Nutzen Sie diese einfache Erinnerung, um sich Ihre Bestellung schnell zu merken.",
     noDishes: "Keine Gerichte in dieser Kategorie.",
     allergens: "Allergene",
     total: "Gesamt",
@@ -141,6 +153,8 @@ export const UI_LABELS: Record<Locale, {
     call: "Ligar",
     map: "Mapa",
     googleReview: "Avaliação Google",
+    orderReminder:
+      "Use este simples lembrete para se lembrar facilmente do seu pedido.",
     noDishes: "Nenhum prato nesta categoria.",
     allergens: "Alérgenos",
     total: "Total",
@@ -158,6 +172,7 @@ export const UI_LABELS: Record<Locale, {
     call: "致电",
     map: "地图",
     googleReview: "Google 评价",
+    orderReminder: "使用这个简单的提醒来快速记住您的订单。",
     noDishes: "此分类中没有菜品。",
     allergens: "过敏原",
     total: "总计",

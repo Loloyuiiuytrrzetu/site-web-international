@@ -119,6 +119,10 @@ export function OrderSheet({ open, items, theme, locale, onClose, onUpdateQty }:
             {formatPrice({ amount: total, currency })}
           </span>
         </div>
+
+        <p className="px-5 pb-5 text-center text-xs italic text-neutral-500">
+          {labels.orderReminder}
+        </p>
       </div>
     </div>
   );

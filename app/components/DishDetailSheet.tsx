@@ -131,7 +131,7 @@ export function DishDetailSheet({ dish, theme, locale, onClose, onAdd }: Props) 
               ))}
             </div>
           )}
-          <h2 className="text-xl font-semibold leading-tight">{name}</h2>
+          <h2 className="menu-title text-xl font-semibold leading-tight">{name}</h2>
           {subtitle && (
             <p className="mt-1 text-sm text-neutral-600">{subtitle}</p>
           )}

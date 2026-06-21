@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
+import {
+  FONT_OPTIONS,
+  buildGoogleFontsUrl,
+  getFontOption,
+} from "@/lib/fonts";
 import { Card, Field, Input, PageHeader } from "../_components/ui";
 
 type Preset = {
@@ -41,6 +46,12 @@ export default function ThemePage() {
   useEffect(() => setMounted(true), []);
   if (!mounted || !restaurant) return null;
   const theme = restaurant.theme;
+  const titleFont = getFontOption(theme.fontTitle);
+  const bodyFont = getFontOption(theme.fontBody);
+  const googleHref = buildGoogleFontsUrl([
+    theme.fontTitle ?? "system",
+    theme.fontBody ?? "system",
+  ]);
 
   const flashSaved = () => {
     setSaved(true);
@@ -62,11 +73,20 @@ export default function ThemePage() {
     flashSaved();
   };
 
+  const setFont = (which: "fontTitle" | "fontBody", id: string) => {
+    updateTheme({ [which]: id } as Partial<typeof theme>);
+    flashSaved();
+  };
+
   return (
     <div className="mx-auto max-w-3xl p-4 lg:p-8">
+      {googleHref && (
+        // eslint-disable-next-line @next/next/no-css-tags
+        <link rel="stylesheet" href={googleHref} />
+      )}
       <PageHeader
         title="Apparence"
-        description="Personnalisez les couleurs et le style de votre menu."
+        description="Personnalisez les couleurs, polices et style de votre menu."
       />
 
       <div className="flex flex-col gap-4">
@@ -135,6 +155,26 @@ export default function ThemePage() {
           </div>
         </Card>
 
+        <Card
+          title="Polices"
+          description="Donnez une vraie personnalité typographique à votre menu."
+        >
+          <div className="flex flex-col gap-5">
+            <FontPicker
+              label="Titres"
+              hint="Nom du restaurant, catégories, plats"
+              value={theme.fontTitle ?? "system"}
+              onChange={(id) => setFont("fontTitle", id)}
+            />
+            <FontPicker
+              label="Corps de texte"
+              hint="Slogan, descriptions, prix"
+              value={theme.fontBody ?? "system"}
+              onChange={(id) => setFont("fontBody", id)}
+            />
+          </div>
+        </Card>
+
         <Card title="Aperçu en direct">
           <div
             className="rounded-2xl p-5"
@@ -145,16 +185,19 @@ export default function ThemePage() {
           >
             <p
               className="text-center text-[10px] font-medium uppercase tracking-[0.25em] opacity-80"
-              style={{ color: theme.textColor }}
+              style={{
+                color: theme.textColor,
+                fontFamily: bodyFont.family,
+              }}
             >
               {restaurant.tagline || "Votre slogan"}
             </p>
             <h2
-              className="mt-6 text-3xl italic leading-none"
+              className="mt-6 text-3xl leading-tight"
               style={{
                 color: theme.textColor,
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontWeight: 400,
+                fontFamily: titleFont.family,
+                fontWeight: 600,
               }}
             >
               {restaurant.name}
@@ -166,7 +209,10 @@ export default function ThemePage() {
                 color: theme.textColor,
               }}
             >
-              <p className="text-xs opacity-90">
+              <p
+                className="text-xs opacity-90"
+                style={{ fontFamily: bodyFont.family }}
+              >
                 Voici à quoi ressemble votre menu pour vos clients.
               </p>
             </div>
@@ -180,6 +226,57 @@ export default function ThemePage() {
           Enregistré
         </div>
       )}
+    </div>
+  );
+}
+
+function FontPicker({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  value: string;
+  onChange: (id: string) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-2">
+        <p className="text-xs font-semibold text-neutral-900">{label}</p>
+        {hint && <p className="text-[11px] text-neutral-500">{hint}</p>}
+      </div>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {FONT_OPTIONS.map((font) => {
+          const active = value === font.id;
+          return (
+            <button
+              type="button"
+              key={font.id}
+              onClick={() => onChange(font.id)}
+              className={`flex flex-col items-start rounded-xl border p-3 text-left transition active:scale-95 ${
+                active
+                  ? "border-neutral-900 bg-neutral-50 shadow-md"
+                  : "border-neutral-200 bg-white hover:border-neutral-400"
+              }`}
+            >
+              <span
+                className="text-2xl leading-none text-neutral-900"
+                style={{ fontFamily: font.family, fontWeight: 600 }}
+              >
+                Aa
+              </span>
+              <span className="mt-2 text-[11px] font-semibold text-neutral-900">
+                {font.label}
+              </span>
+              <span className="text-[10px] text-neutral-500 line-clamp-2">
+                {font.description}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

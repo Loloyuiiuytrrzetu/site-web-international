@@ -256,6 +256,8 @@ export type RestaurantTheme = {
   textColor: string;
   accentColor: string;
   fontFamily?: string;
+  fontTitle?: string;
+  fontBody?: string;
 };
 
 export type RestaurantContact = {

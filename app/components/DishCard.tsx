@@ -57,7 +57,7 @@ export function DishCard({ dish, theme, locale, onOpen, onAdd }: Props) {
         onClick={onOpen}
         className="flex flex-1 flex-col items-start text-left"
       >
-        <h3 className="text-sm font-semibold leading-snug text-neutral-900">
+        <h3 className="menu-title text-sm font-semibold leading-snug text-neutral-900">
           {name}
         </h3>
         {subtitle && (

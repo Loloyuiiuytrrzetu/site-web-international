@@ -5,6 +5,7 @@ import Script from "next/script";
 import { ArrowLeft, Check, ChevronDown, Globe } from "lucide-react";
 import type { Category, Dish, Locale, Restaurant } from "@/lib/types";
 import { t, UI_LABELS } from "@/lib/i18n";
+import { buildGoogleFontsUrl, getFontOption } from "@/lib/fonts";
 import { trackDishView, trackMenuView } from "@/lib/track";
 import { CategoryCard } from "./CategoryCard";
 import { DishCard } from "./DishCard";
@@ -80,14 +81,38 @@ export function MenuView({ restaurant }: Props) {
     });
   };
 
+  const titleFont = getFontOption(restaurant.theme.fontTitle);
+  const bodyFont = getFontOption(restaurant.theme.fontBody);
+  const googleFontsUrl = buildGoogleFontsUrl([
+    restaurant.theme.fontTitle ?? "system",
+    restaurant.theme.fontBody ?? "system",
+  ]);
+
   return (
     <div
       className="min-h-screen"
-      style={{
-        backgroundColor: restaurant.theme.backgroundColor,
-        color: restaurant.theme.textColor,
-      }}
+      style={
+        {
+          backgroundColor: restaurant.theme.backgroundColor,
+          color: restaurant.theme.textColor,
+          ["--font-title"]: titleFont.family,
+          ["--font-body"]: bodyFont.family,
+          fontFamily: bodyFont.family,
+        } as React.CSSProperties
+      }
     >
+      {googleFontsUrl && (
+        // eslint-disable-next-line @next/next/no-css-tags
+        <link rel="stylesheet" href={googleFontsUrl} />
+      )}
+      <style jsx global>{`
+        .menu-title {
+          font-family: var(--font-title);
+        }
+        .menu-body {
+          font-family: var(--font-body);
+        }
+      `}</style>
       <Script
         type="module"
         src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
@@ -181,11 +206,10 @@ function HomeView({
               />
             )}
             <h1
-              className="flex-1 text-4xl italic leading-none tracking-tight sm:text-5xl"
+              className="menu-title flex-1 text-4xl leading-tight tracking-tight sm:text-5xl"
               style={{
                 color: restaurant.theme.textColor,
-                fontFamily: "Georgia, 'Times New Roman', serif",
-                fontWeight: 400,
+                fontWeight: 600,
               }}
             >
               {restaurant.name}
@@ -260,7 +284,7 @@ function CategoryView({
       </div>
 
       <header className="mb-4">
-        <h2 className="text-2xl font-semibold leading-tight">{name}</h2>
+        <h2 className="menu-title text-2xl font-semibold leading-tight">{name}</h2>
         {tagline && <p className="mt-1 text-sm opacity-70">{tagline}</p>}
         <p className="mt-2 text-xs opacity-60">{labels.dishes(category.dishes.length)}</p>
       </header>

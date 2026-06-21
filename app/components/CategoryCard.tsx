@@ -39,7 +39,7 @@ export function CategoryCard({ category, theme, locale, onClick }: Props) {
         }}
       />
       <div className="absolute inset-x-0 bottom-0 p-3.5 text-white">
-        <h2 className="text-lg font-semibold leading-tight">{name}</h2>
+        <h2 className="menu-title text-lg font-semibold leading-tight">{name}</h2>
         {tagline && (
           <p className="mt-0.5 line-clamp-1 text-[11px] opacity-90">{tagline}</p>
         )}
