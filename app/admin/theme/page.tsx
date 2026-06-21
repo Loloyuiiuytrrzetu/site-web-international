@@ -48,9 +48,13 @@ export default function ThemePage() {
   const theme = restaurant.theme;
   const titleFont = getFontOption(theme.fontTitle);
   const bodyFont = getFontOption(theme.fontBody);
+  const restoNameFont = getFontOption(theme.fontRestoName);
+  const taglineFont = getFontOption(theme.fontTagline);
   const googleHref = buildGoogleFontsUrl([
     theme.fontTitle ?? "system",
     theme.fontBody ?? "system",
+    theme.fontRestoName ?? "system",
+    theme.fontTagline ?? "system",
   ]);
 
   const flashSaved = () => {
@@ -73,7 +77,10 @@ export default function ThemePage() {
     flashSaved();
   };
 
-  const setFont = (which: "fontTitle" | "fontBody", id: string) => {
+  const setFont = (
+    which: "fontTitle" | "fontBody" | "fontRestoName" | "fontTagline",
+    id: string
+  ) => {
     updateTheme({ [which]: id } as Partial<typeof theme>);
     flashSaved();
   };
@@ -157,18 +164,30 @@ export default function ThemePage() {
 
         <Card
           title="Polices"
-          description="Donnez une vraie personnalité typographique à votre menu."
+          description="Choisissez une police différente pour chaque élément, indépendamment."
         >
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-6">
             <FontPicker
-              label="Titres"
-              hint="Nom du restaurant, catégories, plats"
+              label="Nom du restaurant"
+              hint="Affiché en grand en haut de votre menu"
+              value={theme.fontRestoName ?? "system"}
+              onChange={(id) => setFont("fontRestoName", id)}
+            />
+            <FontPicker
+              label="Slogan"
+              hint="Le slogan affiché sous votre nom"
+              value={theme.fontTagline ?? "system"}
+              onChange={(id) => setFont("fontTagline", id)}
+            />
+            <FontPicker
+              label="Titres (catégories et plats)"
+              hint="Nom des catégories et des plats"
               value={theme.fontTitle ?? "system"}
               onChange={(id) => setFont("fontTitle", id)}
             />
             <FontPicker
               label="Corps de texte"
-              hint="Slogan, descriptions, prix"
+              hint="Descriptions, prix et autres textes"
               value={theme.fontBody ?? "system"}
               onChange={(id) => setFont("fontBody", id)}
             />
@@ -187,7 +206,9 @@ export default function ThemePage() {
               className="text-center text-[10px] font-medium uppercase tracking-[0.25em] opacity-80"
               style={{
                 color: theme.textColor,
-                fontFamily: bodyFont.family,
+                fontFamily: taglineFont.family,
+                fontStyle: taglineFont.style,
+                fontWeight: taglineFont.weight,
               }}
             >
               {restaurant.tagline || "Votre slogan"}
@@ -196,12 +217,24 @@ export default function ThemePage() {
               className="mt-6 text-3xl leading-tight"
               style={{
                 color: theme.textColor,
-                fontFamily: titleFont.family,
-                fontWeight: 600,
+                fontFamily: restoNameFont.family,
+                fontStyle: restoNameFont.style,
+                fontWeight: restoNameFont.weight ?? 600,
               }}
             >
               {restaurant.name}
             </h2>
+            <p
+              className="mt-4 text-sm font-semibold"
+              style={{
+                color: theme.textColor,
+                fontFamily: titleFont.family,
+                fontStyle: titleFont.style,
+                fontWeight: titleFont.weight ?? 600,
+              }}
+            >
+              Exemple de catégorie
+            </p>
             <div
               className="mt-5 rounded-xl border p-3"
               style={{
@@ -263,7 +296,11 @@ function FontPicker({
             >
               <span
                 className="text-2xl leading-none text-neutral-900"
-                style={{ fontFamily: font.family, fontWeight: 600 }}
+                style={{
+                  fontFamily: font.family,
+                  fontWeight: font.weight ?? 600,
+                  fontStyle: font.style,
+                }}
               >
                 Aa
               </span>

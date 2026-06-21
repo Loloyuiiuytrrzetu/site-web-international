@@ -51,14 +51,14 @@ export function MenuHeader({ restaurant, locale, onLocaleChange }: Props) {
           </div>
           <div className="min-w-0">
             <h1
-              className="menu-title truncate text-base font-semibold leading-tight"
+              className="menu-resto-name truncate text-base font-semibold leading-tight"
               style={{ color: restaurant.theme.textColor }}
             >
               {restaurant.name}
             </h1>
             {restaurant.tagline && (
               <p
-                className="truncate text-xs leading-tight opacity-70"
+                className="menu-tagline truncate text-xs leading-tight opacity-70"
                 style={{ color: restaurant.theme.textColor }}
               >
                 {restaurant.tagline}

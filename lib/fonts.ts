@@ -4,6 +4,8 @@ export type FontOption = {
   description: string;
   family: string;
   googleHref: string;
+  weight?: number;
+  style?: "normal" | "italic";
 };
 
 export const FONT_OPTIONS: FontOption[] = [
@@ -14,6 +16,22 @@ export const FONT_OPTIONS: FontOption[] = [
     family:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     googleHref: "",
+  },
+  {
+    id: "georgia-italic",
+    label: "Georgia italique",
+    description: "Classique élégant · trattoria, brasserie traditionnelle",
+    family: "Georgia, 'Times New Roman', serif",
+    googleHref: "",
+    style: "italic",
+  },
+  {
+    id: "montserrat-light",
+    label: "Montserrat Light",
+    description: "Épuré moderne · cuisine contemporaine, healthy",
+    family: "'Montserrat', sans-serif",
+    googleHref: "Montserrat:wght@300;400;600",
+    weight: 300,
   },
   {
     id: "inter",

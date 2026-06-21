@@ -258,6 +258,8 @@ export type RestaurantTheme = {
   fontFamily?: string;
   fontTitle?: string;
   fontBody?: string;
+  fontRestoName?: string;
+  fontTagline?: string;
 };
 
 export type RestaurantContact = {

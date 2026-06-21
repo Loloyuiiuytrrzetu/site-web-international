@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -265,11 +266,17 @@ const PLANS = [
 ];
 
 function Pricing() {
+  const [billing, setBilling] = useState<"month" | "year">("month");
+  const discount = 0.3;
+
   return (
     <section id="pricing" className="bg-neutral-50 py-20">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest" style={{ color: BRAND }}>
+          <p
+            className="text-sm font-semibold uppercase tracking-widest"
+            style={{ color: BRAND }}
+          >
             Tarifs
           </p>
           <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
@@ -278,50 +285,112 @@ function Pricing() {
           <p className="mt-3 text-base text-neutral-600">
             Choisissez le plan qui correspond à votre restaurant. Changez à tout moment.
           </p>
+
+          <div className="mx-auto mt-8 inline-flex items-center rounded-full border border-neutral-200 bg-white p-1 shadow-sm">
+            <button
+              type="button"
+              onClick={() => setBilling("month")}
+              className={`rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                billing === "month"
+                  ? "text-white shadow"
+                  : "text-neutral-700 hover:text-neutral-900"
+              }`}
+              style={billing === "month" ? { backgroundColor: BRAND } : undefined}
+            >
+              Mensuel
+            </button>
+            <button
+              type="button"
+              onClick={() => setBilling("year")}
+              className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                billing === "year"
+                  ? "text-white shadow"
+                  : "text-neutral-700 hover:text-neutral-900"
+              }`}
+              style={billing === "year" ? { backgroundColor: BRAND } : undefined}
+            >
+              Annuel
+              <span
+                className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                  billing === "year"
+                    ? "bg-white text-neutral-900"
+                    : "text-white"
+                }`}
+                style={
+                  billing === "year" ? undefined : { backgroundColor: BRAND }
+                }
+              >
+                -30%
+              </span>
+            </button>
+          </div>
         </div>
 
         <div className="mx-auto mt-12 grid max-w-3xl gap-5 sm:grid-cols-2">
-          {PLANS.map((p) => (
-            <div
-              key={p.name}
-              className={`relative rounded-2xl border bg-white p-6 ${
-                p.featured ? "shadow-xl" : "border-neutral-200 shadow-sm"
-              }`}
-              style={p.featured ? { borderColor: BRAND } : undefined}
-            >
-              {p.featured && (
-                <span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
-                  style={{ backgroundColor: BRAND }}
-                >
-                  Recommandé
-                </span>
-              )}
-              <h3 className="text-xl font-bold">{p.name}</h3>
-              <p className="text-sm text-neutral-500">{p.desc}</p>
-              <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-bold">{p.price} €</span>
-                <span className="text-sm text-neutral-500">/mois</span>
-              </p>
-              <ul className="mt-5 space-y-2">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check size={16} className="mt-0.5 shrink-0" style={{ color: BRAND }} />
-                    <span className="text-neutral-700">{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/login"
-                className={`mt-6 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition active:scale-95 ${
-                  p.featured ? "text-white shadow-lg" : "border border-neutral-300 text-neutral-900 hover:bg-neutral-50"
+          {PLANS.map((p) => {
+            const monthlyPrice =
+              billing === "year"
+                ? Math.round(p.price * (1 - discount))
+                : p.price;
+            const yearlyTotal = Math.round(p.price * 12 * (1 - discount));
+            return (
+              <div
+                key={p.name}
+                className={`relative rounded-2xl border bg-white p-6 ${
+                  p.featured ? "shadow-xl" : "border-neutral-200 shadow-sm"
                 }`}
-                style={p.featured ? { backgroundColor: BRAND } : undefined}
+                style={p.featured ? { borderColor: BRAND } : undefined}
               >
-                Commencer
-              </Link>
-            </div>
-          ))}
+                {p.featured && (
+                  <span
+                    className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white"
+                    style={{ backgroundColor: BRAND }}
+                  >
+                    Recommandé
+                  </span>
+                )}
+                <h3 className="text-xl font-bold">{p.name}</h3>
+                <p className="text-sm text-neutral-500">{p.desc}</p>
+                <p className="mt-4 flex items-baseline gap-1">
+                  {billing === "year" && (
+                    <span className="text-lg text-neutral-400 line-through">
+                      {p.price} €
+                    </span>
+                  )}
+                  <span className="text-4xl font-bold">{monthlyPrice} €</span>
+                  <span className="text-sm text-neutral-500">/mois</span>
+                </p>
+                {billing === "year" && (
+                  <p className="mt-1 text-xs font-semibold" style={{ color: BRAND }}>
+                    Facturé {yearlyTotal} € par an · économisez 30%
+                  </p>
+                )}
+                <ul className="mt-5 space-y-2">
+                  {p.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Check
+                        size={16}
+                        className="mt-0.5 shrink-0"
+                        style={{ color: BRAND }}
+                      />
+                      <span className="text-neutral-700">{f}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/login"
+                  className={`mt-6 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition active:scale-95 ${
+                    p.featured
+                      ? "text-white shadow-lg"
+                      : "border border-neutral-300 text-neutral-900 hover:bg-neutral-50"
+                  }`}
+                  style={p.featured ? { backgroundColor: BRAND } : undefined}
+                >
+                  Commencer
+                </Link>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -358,22 +427,71 @@ function CTA() {
 
 function Footer() {
   return (
-    <footer className="border-t border-neutral-100 bg-white py-8">
-      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-neutral-600 sm:flex-row">
-        <div className="flex items-center gap-2">
-          <Image
-            src={WALLETIZ_BRAND.logoUrl}
-            alt=""
-            width={24}
-            height={24}
-            className="h-6 w-6 rounded"
-          />
-          <span>© {new Date().getFullYear()} Walletiz · Tous droits réservés</span>
+    <footer className="border-t border-neutral-100 bg-white py-10">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="grid gap-8 sm:grid-cols-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <Image
+                src={WALLETIZ_BRAND.logoUrl}
+                alt="Walletiz"
+                width={28}
+                height={28}
+                className="h-7 w-7 rounded"
+              />
+              <span className="text-base font-bold tracking-tight">Walletiz</span>
+            </div>
+            <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+              Le menu digital qui fait briller votre restaurant. Multilingue, sans
+              appli, prêt en 5 minutes.
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-neutral-900">
+              Contact
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+              <li>
+                <a
+                  href="mailto:walletiz.fr@gmail.com"
+                  className="hover:text-neutral-900"
+                >
+                  walletiz.fr@gmail.com
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+590690988538"
+                  className="hover:text-neutral-900"
+                >
+                  0690-98-85-38
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-neutral-900">
+              Légal
+            </p>
+            <ul className="mt-3 space-y-2 text-sm text-neutral-600">
+              <li>
+                <a href="#" className="hover:text-neutral-900">
+                  Confidentialité
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-neutral-900">
+                  CGU
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="flex gap-5">
-          <a href="#" className="hover:text-neutral-900">Confidentialité</a>
-          <a href="#" className="hover:text-neutral-900">CGU</a>
-          <a href="mailto:contact@walletiz.com" className="hover:text-neutral-900">Contact</a>
+
+        <div className="mt-8 border-t border-neutral-100 pt-5 text-center text-xs text-neutral-500">
+          © {new Date().getFullYear()} Walletiz · Tous droits réservés
         </div>
       </div>
     </footer>

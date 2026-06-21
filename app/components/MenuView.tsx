@@ -83,9 +83,13 @@ export function MenuView({ restaurant }: Props) {
 
   const titleFont = getFontOption(restaurant.theme.fontTitle);
   const bodyFont = getFontOption(restaurant.theme.fontBody);
+  const restoNameFont = getFontOption(restaurant.theme.fontRestoName);
+  const taglineFont = getFontOption(restaurant.theme.fontTagline);
   const googleFontsUrl = buildGoogleFontsUrl([
     restaurant.theme.fontTitle ?? "system",
     restaurant.theme.fontBody ?? "system",
+    restaurant.theme.fontRestoName ?? "system",
+    restaurant.theme.fontTagline ?? "system",
   ]);
 
   return (
@@ -96,8 +100,20 @@ export function MenuView({ restaurant }: Props) {
           backgroundColor: restaurant.theme.backgroundColor,
           color: restaurant.theme.textColor,
           ["--font-title"]: titleFont.family,
+          ["--font-title-weight"]: String(titleFont.weight ?? 600),
+          ["--font-title-style"]: titleFont.style ?? "normal",
           ["--font-body"]: bodyFont.family,
+          ["--font-body-weight"]: String(bodyFont.weight ?? 400),
+          ["--font-body-style"]: bodyFont.style ?? "normal",
+          ["--font-resto-name"]: restoNameFont.family,
+          ["--font-resto-name-weight"]: String(restoNameFont.weight ?? 600),
+          ["--font-resto-name-style"]: restoNameFont.style ?? "normal",
+          ["--font-tagline"]: taglineFont.family,
+          ["--font-tagline-weight"]: String(taglineFont.weight ?? 400),
+          ["--font-tagline-style"]: taglineFont.style ?? "normal",
           fontFamily: bodyFont.family,
+          fontWeight: bodyFont.weight ?? 400,
+          fontStyle: bodyFont.style ?? "normal",
         } as React.CSSProperties
       }
     >
@@ -108,9 +124,23 @@ export function MenuView({ restaurant }: Props) {
       <style jsx global>{`
         .menu-title {
           font-family: var(--font-title);
+          font-weight: var(--font-title-weight);
+          font-style: var(--font-title-style);
         }
         .menu-body {
           font-family: var(--font-body);
+          font-weight: var(--font-body-weight);
+          font-style: var(--font-body-style);
+        }
+        .menu-resto-name {
+          font-family: var(--font-resto-name);
+          font-weight: var(--font-resto-name-weight);
+          font-style: var(--font-resto-name-style);
+        }
+        .menu-tagline {
+          font-family: var(--font-tagline);
+          font-weight: var(--font-tagline-weight);
+          font-style: var(--font-tagline-style);
         }
       `}</style>
       <Script
@@ -187,7 +217,7 @@ function HomeView({
       <header className="mx-auto max-w-3xl px-5 pb-10 pt-8 sm:pb-14 sm:pt-12">
         {tagline ? (
           <p
-            className="text-center text-[11px] font-medium uppercase tracking-[0.3em] opacity-70"
+            className="menu-tagline text-center text-[11px] font-medium uppercase tracking-[0.3em] opacity-70"
             style={{ color: restaurant.theme.textColor }}
           >
             {tagline}
@@ -206,10 +236,9 @@ function HomeView({
               />
             )}
             <h1
-              className="menu-title flex-1 text-4xl leading-tight tracking-tight sm:text-5xl"
+              className="menu-resto-name flex-1 text-4xl leading-tight tracking-tight sm:text-5xl"
               style={{
                 color: restaurant.theme.textColor,
-                fontWeight: 600,
               }}
             >
               {restaurant.name}
