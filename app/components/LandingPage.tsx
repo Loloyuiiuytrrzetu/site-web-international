@@ -47,8 +47,7 @@ function Header() {
           <span className="text-lg font-bold tracking-tight">Walletiz</span>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-medium text-neutral-700 md:flex">
-          <a href="#features" className="hover:text-neutral-900">Menu QR</a>
-          <a href="/fidelite" className="hover:text-neutral-900">Carte fidélité</a>
+          <a href="#features" className="hover:text-neutral-900">Fonctionnalités</a>
           <a href="#pricing" className="hover:text-neutral-900">Tarifs</a>
           <Link href="/r/il-piatto" className="hover:text-neutral-900">Démo</Link>
         </nav>
