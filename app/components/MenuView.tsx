@@ -7,6 +7,7 @@ import type { Category, Dish, Locale, Restaurant } from "@/lib/types";
 import { t, UI_LABELS } from "@/lib/i18n";
 import { buildGoogleFontsUrl, getFontOption } from "@/lib/fonts";
 import { trackDishView, trackMenuView } from "@/lib/track";
+import { useAuth } from "@/lib/auth";
 import { CategoryCard } from "./CategoryCard";
 import { DishCard } from "./DishCard";
 import { DishDetailSheet } from "./DishDetailSheet";
@@ -45,6 +46,10 @@ export function MenuView({ restaurant }: Props) {
   const [order, setOrder] = useState<OrderItem[]>([]);
   const [orderOpen, setOrderOpen] = useState(false);
 
+  const authSession = useAuth((s) => s.session);
+  const authLoading = useAuth((s) => s.loading);
+  const isLoggedInUser = !authLoading && authSession !== null;
+
   const setLocale = (next: Locale) => {
     setLocaleState(next);
     try {
@@ -53,13 +58,17 @@ export function MenuView({ restaurant }: Props) {
   };
 
   useEffect(() => {
+    if (authLoading) return;
+    if (isLoggedInUser) return;
     void trackMenuView(restaurant.id, locale);
-  }, [restaurant.id, locale]);
+  }, [restaurant.id, locale, authLoading, isLoggedInUser]);
 
   useEffect(() => {
+    if (authLoading) return;
+    if (isLoggedInUser) return;
     if (activeDish) void trackDishView(restaurant.id, activeDish.id, locale);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeDish?.id]);
+  }, [activeDish?.id, authLoading, isLoggedInUser]);
 
   const updateQty = (dishId: string, qty: number) => {
     setOrder((prev) =>
