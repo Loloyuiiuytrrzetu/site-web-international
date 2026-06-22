@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown } from "lucide-react";
 import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import {
   FONT_OPTIONS,
@@ -166,7 +166,7 @@ export default function ThemePage() {
           title="Polices"
           description="Choisissez une police différente pour chaque élément, indépendamment."
         >
-          <div className="flex flex-col gap-6">
+          <div className="grid gap-4 sm:grid-cols-2">
             <FontPicker
               label="Nom du restaurant"
               hint="Affiché en grand en haut de votre menu"
@@ -274,45 +274,110 @@ function FontPicker({
   value: string;
   onChange: (id: string) => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = getFontOption(value);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
   return (
     <div>
-      <div className="mb-2">
+      <div className="mb-1.5">
         <p className="text-xs font-semibold text-neutral-900">{label}</p>
         {hint && <p className="text-[11px] text-neutral-500">{hint}</p>}
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {FONT_OPTIONS.map((font) => {
-          const active = value === font.id;
-          return (
-            <button
-              type="button"
-              key={font.id}
-              onClick={() => onChange(font.id)}
-              className={`flex flex-col items-start rounded-xl border p-3 text-left transition active:scale-95 ${
-                active
-                  ? "border-neutral-900 bg-neutral-50 shadow-md"
-                  : "border-neutral-200 bg-white hover:border-neutral-400"
-              }`}
+      <div className="relative" ref={ref}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="flex w-full items-center justify-between gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-left transition hover:border-neutral-400"
+        >
+          <span className="flex items-center gap-2.5 min-w-0">
+            <span
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-200 text-base text-neutral-900"
+              style={{
+                fontFamily: selected.family,
+                fontWeight: selected.weight ?? 600,
+                fontStyle: selected.style,
+              }}
             >
-              <span
-                className="text-2xl leading-none text-neutral-900"
-                style={{
-                  fontFamily: font.family,
-                  fontWeight: font.weight ?? 600,
-                  fontStyle: font.style,
-                }}
-              >
-                Aa
+              Aa
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-sm font-medium text-neutral-900">
+                {selected.label}
               </span>
-              <span className="mt-2 text-[11px] font-semibold text-neutral-900">
-                {font.label}
+              <span className="block truncate text-[10px] text-neutral-500">
+                {selected.description}
               </span>
-              <span className="text-[10px] text-neutral-500 line-clamp-2">
-                {font.description}
-              </span>
-            </button>
-          );
-        })}
+            </span>
+          </span>
+          <ChevronDown
+            size={16}
+            className={`shrink-0 text-neutral-500 transition ${
+              open ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {open && (
+          <div className="absolute left-0 right-0 top-full z-20 mt-1.5 max-h-96 overflow-y-auto rounded-xl border border-neutral-200 bg-white shadow-xl">
+            {FONT_OPTIONS.map((font) => {
+              const active = value === font.id;
+              return (
+                <button
+                  type="button"
+                  key={font.id}
+                  onClick={() => {
+                    onChange(font.id);
+                    setOpen(false);
+                  }}
+                  className={`flex w-full items-center gap-2.5 border-b border-neutral-100 px-3 py-2.5 text-left transition last:border-b-0 hover:bg-neutral-50 ${
+                    active ? "bg-neutral-50" : ""
+                  }`}
+                >
+                  <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-200 text-base text-neutral-900"
+                    style={{
+                      fontFamily: font.family,
+                      fontWeight: font.weight ?? 600,
+                      fontStyle: font.style,
+                    }}
+                  >
+                    Aa
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={`block truncate text-sm ${
+                        active
+                          ? "font-semibold text-neutral-900"
+                          : "text-neutral-800"
+                      }`}
+                    >
+                      {font.label}
+                    </span>
+                    <span className="block truncate text-[10px] text-neutral-500">
+                      {font.description}
+                    </span>
+                  </span>
+                  {active && (
+                    <Check
+                      size={14}
+                      className="shrink-0 text-neutral-900"
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
