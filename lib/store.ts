@@ -17,6 +17,7 @@ import {
   insertCategory,
   insertDish,
   updateCategoryRow,
+  updateCategorySortOrder,
   updateDishRow,
   updateRestaurantContact,
   updateRestaurantInfo,
@@ -70,6 +71,7 @@ type Actions = {
     patch: Partial<Omit<Category, "id" | "dishes">>
   ) => void;
   deleteCategory: (id: string) => void;
+  moveCategory: (id: string, direction: "up" | "down") => void;
   addDish: (categoryId: string, dish: Omit<Dish, "id">) => void;
   updateDish: (
     categoryId: string,
@@ -315,6 +317,30 @@ export const useRestaurantStore = create<State & Actions>()(
           }))
         );
         void deleteCategoryRow(id);
+      },
+
+      moveCategory: (id, direction) => {
+        const restaurantId = get().currentRestaurantId;
+        const current = get().restaurants.find((r) => r.id === restaurantId);
+        if (!current) return;
+        const idx = current.categories.findIndex((c) => c.id === id);
+        if (idx === -1) return;
+        const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+        if (swapIdx < 0 || swapIdx >= current.categories.length) return;
+        const reordered = [...current.categories];
+        [reordered[idx], reordered[swapIdx]] = [
+          reordered[swapIdx],
+          reordered[idx],
+        ];
+        set((s) =>
+          mapCurrent(s, (r) => ({ ...r, categories: reordered }))
+        );
+        const movedIds = [reordered[idx].id, reordered[swapIdx].id] as const;
+        const movedOrders = [idx, swapIdx] as const;
+        void Promise.all([
+          updateCategorySortOrder(movedIds[0], movedOrders[0]),
+          updateCategorySortOrder(movedIds[1], movedOrders[1]),
+        ]);
       },
 
       addDish: (categoryId, dish) => {

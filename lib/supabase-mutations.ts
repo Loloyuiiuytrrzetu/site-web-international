@@ -106,6 +106,14 @@ export async function deleteCategoryRow(id: string) {
   if (error) logError("deleteCategoryRow", error);
 }
 
+export async function updateCategorySortOrder(id: string, sortOrder: number) {
+  const { error } = await supabase
+    .from("categories")
+    .update({ sort_order: sortOrder })
+    .eq("id", id);
+  if (error) logError("updateCategorySortOrder", error);
+}
+
 export async function insertDish(
   categoryId: string,
   dish: Dish & { sort_order: number }

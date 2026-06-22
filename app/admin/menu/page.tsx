@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  Pencil,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { useCurrentRestaurant, useRestaurantStore } from "@/lib/store";
 import type { Category, Dish } from "@/lib/types";
 import { Button, Card, PageHeader } from "../_components/ui";
@@ -13,6 +20,7 @@ export default function MenuPage() {
   const restaurant = useCurrentRestaurant();
   const deleteCategory = useRestaurantStore((s) => s.deleteCategory);
   const deleteDish = useRestaurantStore((s) => s.deleteDish);
+  const moveCategory = useRestaurantStore((s) => s.moveCategory);
 
   const [mounted, setMounted] = useState(false);
   const [openCatId, setOpenCatId] = useState<string | null>(null);
@@ -56,14 +64,36 @@ export default function MenuPage() {
           </Card>
         )}
 
-        {restaurant.categories.map((cat) => {
+        {restaurant.categories.map((cat, index) => {
           const open = openCatId === cat.id;
+          const isFirst = index === 0;
+          const isLast = index === restaurant.categories.length - 1;
           return (
             <section
               key={cat.id}
               className="overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm"
             >
-              <header className="flex items-center gap-3 p-3 sm:p-4">
+              <header className="flex items-center gap-2 p-3 sm:p-4">
+                <div className="flex shrink-0 flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => moveCategory(cat.id, "up")}
+                    disabled={isFirst}
+                    aria-label="Monter la catégorie"
+                    className="rounded-md p-0.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+                  >
+                    <ArrowUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveCategory(cat.id, "down")}
+                    disabled={isLast}
+                    aria-label="Descendre la catégorie"
+                    className="rounded-md p-0.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent"
+                  >
+                    <ArrowDown size={14} />
+                  </button>
+                </div>
                 <button
                   type="button"
                   onClick={() => setOpenCatId(open ? null : cat.id)}
@@ -77,6 +107,9 @@ export default function MenuPage() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="truncate text-sm font-semibold text-neutral-900">
+                      <span className="mr-1.5 text-xs font-bold text-neutral-400">
+                        {index + 1}.
+                      </span>
                       {cat.name}
                     </p>
                     <p className="text-xs text-neutral-500">
